@@ -1,0 +1,47 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker Compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+
+services:
+  server:
+    env_file: ".env"
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    build:
+      context: .
+      target: final
+    ports:
+      - "${WEB_SERVER_PORT}:${WEB_SERVER_PORT}"
+
+  mysqldb:
+    image: mysql:8.0
+    container_name: mysqldb
+    restart: always
+    env_file: ".env"
+    ports:
+      - "${MYSQL_EXTERNAL_PORT}:3306"
+    volumes:
+      - mysqldb-data:/var/lib/mysql
+    command:
+      --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  mysqldb-data:
+
+
+# secrets:
+#   db-password:
+#     file: db/password.txt
+
