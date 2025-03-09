@@ -37,22 +37,10 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	envs, invalidVars, err := configs.Config(".env")
-	if err != nil && invalidVars != nil {
-		for _, v := range *invalidVars {
-			fmt.Printf("invalid var: %s reason: %s\n", v.Field, v.Reason)
-		}
-		panic(fmt.Sprintf("error loading config: %s", err))
-	}
-	if envs == nil {
-		panic("error loading config")
-	}
+	envs := configs.LoadEnv()
 
 	db := database.New(envs)
-	err = db.Ping()
-	if err != nil {
-		panic(fmt.Sprintf("error connecting to database: %s", err))
-	}
+	defer db.Close()
 	httpHandler := server.StartHttpHandler(&server.HandlersContainer{}, envs.WebServerPort)
 	s := server.NewServer(envs, httpHandler)
 
@@ -66,7 +54,7 @@ func main() {
 	// Run graceful shutdown in a separate goroutine
 	go gracefulShutdown(s, done)
 
-	err = s.ListenAndServe()
+	err := s.ListenAndServe()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		panic(fmt.Sprintf("http server error: %s", err))
 	}

@@ -1,10 +1,10 @@
 package configs
 
 import (
-	"fmt"
-	"github.com/mayckol/envsnatch"
+	"github.com/joho/godotenv"
+	"log"
 	"os"
-	"path/filepath"
+	"strconv"
 )
 
 type EnvVars struct {
@@ -17,40 +17,25 @@ type EnvVars struct {
 	MysqlPort         string `env:"MYSQL_PORT"`
 }
 
-// Config loads the configuration from the .env file or .env.test file and returns the configuration and the invalid variables
-func Config(envName string) (*EnvVars, *[]envsnatch.UnmarshalingErr, error) {
-	env := ".env"
-	es, _ := envsnatch.NewEnvSnatch()
-	fileDir, _ := filepath.Split(dir(env))
-	es.AddPath(fileDir)
-	es.AddFileName(envName)
-	var envs EnvVars
-	invalidVars, err := es.Unmarshal(&envs)
-	return &envs, invalidVars, err
-}
-
-// dir returns the absolute path of the given environment file (envFile) in the Go module's
-// root directory. It searches for the 'go.mod' file from the current working directory upwards
-// and appends the envFile to the directory containing 'go.mod'.
-// It panics if it fails to find the 'go.mod' file.
-func dir(envFile string) string {
-	currentDir, err := os.Getwd()
+func LoadEnv() *EnvVars {
+	err := godotenv.Load()
 	if err != nil {
-		panic(err)
+		log.Println("No .env file found, using system env variables")
 	}
 
-	for {
-		goModPath := filepath.Join(currentDir, "go.mod")
-		if _, err := os.Stat(goModPath); err == nil {
-			break
-		}
-
-		parent := filepath.Dir(currentDir)
-		if parent == currentDir {
-			panic(fmt.Errorf("go.mod not found"))
-		}
-		currentDir = parent
+	portStr := os.Getenv("WEB_SERVER_PORT")
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		log.Fatalf("Invalid WEB_SERVER_PORT value: %s", portStr)
 	}
 
-	return filepath.Join(currentDir, envFile)
+	return &EnvVars{
+		WebServerPort:     port,
+		MysqlRootPassword: os.Getenv("MYSQL_ROOT_PASSWORD"),
+		MysqlDatabase:     os.Getenv("MYSQL_DATABASE"),
+		MysqlUser:         os.Getenv("MYSQL_USER"),
+		MysqlPassword:     os.Getenv("MYSQL_PASSWORD"),
+		MysqlHost:         os.Getenv("MYSQL_HOST"),
+		MysqlPort:         os.Getenv("MYSQL_PORT"),
+	}
 }
