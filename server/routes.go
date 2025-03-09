@@ -1,16 +1,17 @@
 package server
 
 import (
-	//_ "clapz/docs"
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
+	_ "tasks-api/docs"
+	"tasks-api/internal/infra/web"
 )
 
 type HandlersContainer struct {
-	//AuthHandler *web.AuthHandler
+	UserHandler web.UserHandler
 }
 
 func StartHttpHandler(hc *HandlersContainer, port int) *chi.Mux {
@@ -29,9 +30,10 @@ func StartHttpHandler(hc *HandlersContainer, port int) *chi.Mux {
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/v1", func(r chi.Router) {
 			r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("http://localhost:%d/api/v1/docs/doc.json", port))))
-			r.Route("/auth", func(r chi.Router) {
-				//r.Get("/confirm-account", hc.AuthHandler.ConfirmAccount)
-				//r.Post("/forgot-password", hc.AuthHandler.ForgotPassword)
+			// to avoid create two handlers like Auth and User, I chose to create only UserHandler to focus on the functional requirements of the task
+			r.Route("/user", func(r chi.Router) {
+				r.Post("/", hc.UserHandler.NewUser)
+				r.Post("/signin", hc.UserHandler.Signin)
 			})
 		})
 	})

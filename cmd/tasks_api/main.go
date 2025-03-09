@@ -10,14 +10,15 @@ import (
 	"os/signal"
 	"syscall"
 	"tasks-api/configs"
-	"tasks-api/internal/database"
+	"tasks-api/internal/auth/jwtpkg"
+	"tasks-api/internal/infra/database"
+	"tasks-api/internal/infra/database/queries"
+	"tasks-api/internal/infra/repository"
+	"tasks-api/internal/infra/web"
+	"tasks-api/internal/validation"
 	"tasks-api/server"
 	"time"
 )
-
-//func main() {
-//	fmt.Println("Hello, World!")
-//}
 
 // @title Swagger Tasks API
 // @version 1.0
@@ -41,7 +42,17 @@ func main() {
 
 	db := database.New(envs)
 	defer db.Close()
-	httpHandler := server.StartHttpHandler(&server.HandlersContainer{}, envs.WebServerPort)
+
+	q := queries.New(db)
+
+	uRepo := repository.NewUserRepository(q)
+
+	v := validation.NewWrapper()
+
+	jwtService := jwtpkg.NewJWTService(envs.JwtSecret)
+	httpHandler := server.StartHttpHandler(&server.HandlersContainer{
+		UserHandler: *web.NewUserHandler(envs, uRepo, jwtService, v),
+	}, envs.WebServerPort)
 	s := server.NewServer(envs, httpHandler)
 
 	_ = chi.Walk(httpHandler, func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {

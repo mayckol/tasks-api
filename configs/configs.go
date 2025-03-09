@@ -15,6 +15,7 @@ type EnvVars struct {
 	MysqlPassword     string `env:"MYSQL_PASSWORD"`
 	MysqlHost         string `env:"MYSQL_HOST"`
 	MysqlPort         string `env:"MYSQL_PORT"`
+	JwtSecret         string `env:"JWT_SECRET"`
 }
 
 func LoadEnv() *EnvVars {
@@ -37,5 +38,6 @@ func LoadEnv() *EnvVars {
 		MysqlPassword:     os.Getenv("MYSQL_PASSWORD"),
 		MysqlHost:         os.Getenv("MYSQL_HOST"),
 		MysqlPort:         os.Getenv("MYSQL_PORT"),
+		JwtSecret:         os.Getenv("JWT_SECRET"),
 	}
 }

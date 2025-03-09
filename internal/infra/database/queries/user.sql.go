@@ -11,7 +11,7 @@ import (
 )
 
 const deleteUser = `-- name: DeleteUser :execresult
-DELETE FROM users WHERE id = ?
+UPDATE users SET deleted_at = NOW() WHERE id = ?
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, id int32) (sql.Result, error) {
@@ -36,4 +36,22 @@ func (q *Queries) StoreUser(ctx context.Context, arg StoreUserParams) (sql.Resul
 		arg.Password,
 		arg.RoleID,
 	)
+}
+
+const userByEmail = `-- name: UserByEmail :one
+SELECT id, first_name, email, password, role_id, deleted_at FROM users WHERE email = ?
+`
+
+func (q *Queries) UserByEmail(ctx context.Context, email sql.NullString) (User, error) {
+	row := q.queryRow(ctx, q.userByEmailStmt, userByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.FirstName,
+		&i.Email,
+		&i.Password,
+		&i.RoleID,
+		&i.DeletedAt,
+	)
+	return i, err
 }
