@@ -1,0 +1,128 @@
+basePath: /api/v1
+definitions:
+  tasks-api_internal_usecase.NewUserInputDTO:
+    properties:
+      email:
+        description: Here we'd need to validate "unique" in database
+        type: string
+      first_name:
+        maxLength: 50
+        minLength: 2
+        type: string
+      password:
+        description: Here we'd need to validate password strength
+        maxLength: 50
+        minLength: 8
+        type: string
+      role_id:
+        description: Here we'd need to validate that the role exists in the database
+        type: integer
+    required:
+    - email
+    - first_name
+    - password
+    - role_id
+    type: object
+  tasks-api_internal_usecase.SigninInputDTO:
+    properties:
+      email:
+        type: string
+      password:
+        maxLength: 50
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  tasks-api_internal_usecase.SigninOutputDTO:
+    properties:
+      access_token:
+        type: string
+      role_id:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is an api for managing tasks
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Tasks API
+  version: "1.0"
+paths:
+  /user:
+    post:
+      consumes:
+      - '*/*'
+      description: new user.
+      parameters:
+      - description: user
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/tasks-api_internal_usecase.NewUserInputDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: created
+          schema:
+            type: string
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: new user.
+      tags:
+      - User
+  /user/signin:
+    post:
+      consumes:
+      - '*/*'
+      description: signin.
+      parameters:
+      - description: signin
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/tasks-api_internal_usecase.SigninInputDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: signin
+          schema:
+            $ref: '#/definitions/tasks-api_internal_usecase.SigninOutputDTO'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: signin.
+      tags:
+      - User
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
