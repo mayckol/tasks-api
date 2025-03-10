@@ -33,6 +33,10 @@ func (n *TechnicianFindTaskUseCase) Execute(input TechnicianFindTaskInputDTO, us
 		return nil, errorpkg.Wrap("failed to create find technician", http.StatusInternalServerError, err)
 	}
 
+	if task == nil {
+		return nil, errorpkg.Wrap("task not found", http.StatusNotFound, nil)
+	}
+
 	if task.UserID != userID {
 		return nil, errorpkg.Wrap("not allowed", http.StatusUnauthorized, nil)
 	}

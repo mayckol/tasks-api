@@ -26,12 +26,12 @@ type TechnicianAllTasksUseCase struct {
 func (n *TechnicianAllTasksUseCase) Execute(input TechnicianAllTasksInputDTO, userID int) (*TechnicianAllTasksOutputDTO, *errorpkg.AppError) {
 	tasks, err := n.TechnicianRepository.AllTasksByUser(userID, input.Page)
 	if err != nil {
-		return nil, errorpkg.Wrap("failed to create find technician", http.StatusInternalServerError, err)
+		return nil, errorpkg.Wrap("failed to find tasks", http.StatusInternalServerError, err)
 	}
 
 	count, err := n.TechnicianRepository.CountTasksByUser(userID)
 	if err != nil {
-		return nil, errorpkg.Wrap("failed to create find technician", http.StatusInternalServerError, err)
+		return nil, errorpkg.Wrap("failed to find tasks", http.StatusInternalServerError, err)
 	}
 
 	return &TechnicianAllTasksOutputDTO{

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"tasks-api/internal/entity"
 	"tasks-api/internal/infra/database/queries"
 )
@@ -66,7 +67,11 @@ func (t TechnicianRepository) AllTasksByUser(userID, page int) (*[]entity.TaskEn
 		Limit:  int32(pageSize),
 		Offset: int32(offset),
 	})
+
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -101,6 +106,9 @@ func (t TechnicianRepository) FindTask(taskID, userID int) (*entity.TaskEntity, 
 		UserID: int32(userID),
 	})
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, err
 	}
 

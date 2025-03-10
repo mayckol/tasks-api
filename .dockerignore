@@ -28,5 +28,6 @@
 **/obj
 **/secrets.dev.yaml
 **/values.dev.yaml
+**/tasks_api_collection.json
 LICENSE
 README.md
