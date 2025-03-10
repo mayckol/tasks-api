@@ -69,7 +69,7 @@ Modify the values according to your environment.
 docker-compose up -d
 ```
 
-The API will be available at `http://localhost:8080`
+The API will be available at `http://localhost:8080/api/v1`
 
 ### Running Locally
 
@@ -103,7 +103,7 @@ To seed the database with the initial data, run the following command:
 make seed
 ```
 
-The API will be available at `http://localhost:8080`
+The API will be available at `http://localhost:8080/api/v1`
 
 ## API Usage
 
@@ -124,7 +124,7 @@ All API endpoints (except login) require a valid JWT token in the Authorization 
 
 ## Documentation
 
-API documentation is available via Swagger at `/swagger/index.html` when the application is running.
+API documentation is available via Swagger at `http://localhost:8080/api/v1/docs/index.html` when the application is running.
 
 ## Collection
 There is a Insomnia collection in the root of the project called `tasks-api-insomnia.json` that you can import into Insomnia to test the API.
