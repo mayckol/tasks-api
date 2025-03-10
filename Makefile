@@ -27,8 +27,13 @@ tests:
 seed:
 	go run cmd/seed/main.go
 
+readtasks:
+	go run cmd/read_tasks/main.go
+
 sqlgen:
 	@sqlc generate
 
 gendocs:
 	swag init --parseDependency --parseInternal --parseDepth 1 -g cmd/tasks_api/main.go
+
+.PHONY: createmigration migrateup migratedown tests seed readtasks sqlgen gendocs

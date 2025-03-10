@@ -31,42 +31,23 @@ cd tasks-api
 go mod download
 ```
 
-## Configuration
+### Running Locally
 
-Create a `.env` file in the root directory based on the example below:
+1. Make sure MySQL and RabbitMQ is running locally or accessible
+2. Create the `.env` file according to your chosen configuration, based on `.env.example` or `.env.docker-example`
+3. Start the application:
 
+```bash
+go run main.go
 ```
-# Database settings when using docker
-WEB_SERVER_PORT=8080
-MYSQL_ROOT_PASSWORD=secretpassword
-MYSQL_DATABASE=app
-MYSQL_USER=user_app
-MYSQL_PASSWORD=password_app
-MYSQL_EXTERNAL_PORT=3316
-MYSQL_PORT=3306
-MYSQL_HOST=mysqldb
-
-# Database settings when running outside Docker
-#MYSQL_PORT=3316
-#MYSQL_HOST=127.0.0.1
-
-JWT_SECRET=secret
-```
-
-Modify the values according to your environment.
-
-## Running the Application
 
 ### Using Docker
 
 1. Make sure Docker and Docker Compose are installed
-2. Adjust the Docker-specific database settings in your `.env` file:
-    - Set `MYSQL_PORT=3306`
-    - Set `MYSQL_HOST=mysqldb`
-3. Build and start the containers:
+2. Build and start the containers:
 
 ```bash
-docker-compose up -d
+docker-compose up -d --build
 ```
 
 ### IMPORTANT
@@ -77,18 +58,6 @@ docker-compose up -d --build
 ```
 
 The API will be available at `http://localhost:8080/api/v1`
-
-### Running Locally
-
-1. Make sure MySQL is running locally or accessible
-2. Use the outside-Docker settings in your `.env` file:
-    - Set `MYSQL_PORT=3316`
-    - Set `MYSQL_HOST=127.0.0.1` or `localhost`
-3. Start the application:
-
-```bash
-go run main.go
-```
 
 ## Migration
 To create the database schema, run the following command:
@@ -109,8 +78,16 @@ To seed the database with the initial data, run the following command:
 ```bash
 make seed
 ```
+This will create a manager and a technician user with the following credentials as you can see in the `seed/main.go` file
 
 The API will be available at `http://localhost:8080/api/v1`
+
+## Reading messages from the queue
+To read messages from the queue, run the following command:
+
+```bash
+make readtasks
+```
 
 ## API Usage
 
@@ -143,3 +120,9 @@ Run the tests with:
 ```bash
 make test
 ```
+
+## Credits
+- The docker initial setup uses [docker init](https://docs.docker.com/reference/cli/docker/init/)
+- The gracefull shutdown idea comes from [go-blueprint](https://github.com/Melkeydev/go-blueprint)
+- The messaging broker idea comes from [RabbitMQ](https://www.rabbitmq.com/tutorials/tutorial-one-go)
+- The Clean Architecture was inspired by [Full Cycle](https://fullcycle.com.br/clean-architecture-trabalhe-em-aplicacoes-de-grande-porte/)
