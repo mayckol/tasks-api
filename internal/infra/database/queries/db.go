@@ -48,6 +48,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.findTasksByUserIDStmt, err = db.PrepareContext(ctx, findTasksByUserID); err != nil {
 		return nil, fmt.Errorf("error preparing query FindTasksByUserID: %w", err)
 	}
+	if q.storeRoleStmt, err = db.PrepareContext(ctx, storeRole); err != nil {
+		return nil, fmt.Errorf("error preparing query StoreRole: %w", err)
+	}
 	if q.storeTaskStmt, err = db.PrepareContext(ctx, storeTask); err != nil {
 		return nil, fmt.Errorf("error preparing query StoreTask: %w", err)
 	}
@@ -103,6 +106,11 @@ func (q *Queries) Close() error {
 	if q.findTasksByUserIDStmt != nil {
 		if cerr := q.findTasksByUserIDStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing findTasksByUserIDStmt: %w", cerr)
+		}
+	}
+	if q.storeRoleStmt != nil {
+		if cerr := q.storeRoleStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing storeRoleStmt: %w", cerr)
 		}
 	}
 	if q.storeTaskStmt != nil {
@@ -172,6 +180,7 @@ type Queries struct {
 	deleteUserStmt        *sql.Stmt
 	findTaskByIDStmt      *sql.Stmt
 	findTasksByUserIDStmt *sql.Stmt
+	storeRoleStmt         *sql.Stmt
 	storeTaskStmt         *sql.Stmt
 	storeUserStmt         *sql.Stmt
 	updateTaskStmt        *sql.Stmt
@@ -190,6 +199,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		deleteUserStmt:        q.deleteUserStmt,
 		findTaskByIDStmt:      q.findTaskByIDStmt,
 		findTasksByUserIDStmt: q.findTasksByUserIDStmt,
+		storeRoleStmt:         q.storeRoleStmt,
 		storeTaskStmt:         q.storeTaskStmt,
 		storeUserStmt:         q.storeUserStmt,
 		updateTaskStmt:        q.updateTaskStmt,

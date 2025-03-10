@@ -21,6 +21,12 @@ migratedown:
 	DATABASE_URL="mysql://$${MYSQL_USER}:$${MYSQL_PASSWORD}@tcp($${MYSQL_HOST}:$${MYSQL_PORT})/$${MYSQL_DATABASE}" && \
 	migrate -path ./internal/infra/database/sql/migrations -database "$${DATABASE_URL}" -verbose down
 
+tests:
+	go test -v ./...
+
+seed:
+	go run cmd/seed/main.go
+
 sqlgen:
 	@sqlc generate
 
