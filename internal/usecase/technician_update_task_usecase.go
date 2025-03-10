@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"tasks-api/internal/entity"
 	"tasks-api/internal/errorpkg"
@@ -30,6 +30,10 @@ func (n *TechnicianUpdateTaskUseCase) Execute(input TechnicianUpdateTaskInputDTO
 	t, err := n.TechnicianRepository.FindTask(input.TaskID, userID)
 	if err != nil {
 		return nil, errorpkg.Wrap("failed to find task", http.StatusInternalServerError, err)
+	}
+
+	if t == nil {
+		return nil, errorpkg.Wrap("task not found", http.StatusNotFound, nil)
 	}
 
 	// this is not needed in the challenge but it's a good practice to check if the task is already done
@@ -65,9 +69,9 @@ func (n *TechnicianUpdateTaskUseCase) Execute(input TechnicianUpdateTaskInputDTO
 		go func() {
 			err := n.NotifyService.TaskPerformed(t.ID, userID)
 			if err != nil {
-				fmt.Printf("failed to notify task performed: %v\n", err)
+				log.Printf("failed to notify task performed: %v\n", err)
 			} else {
-				fmt.Printf("notified task: %d performed by user: %d\n", t.ID, userID)
+				log.Printf("notified task: %d performed by user: %d\n", t.ID, userID)
 			}
 		}()
 	}

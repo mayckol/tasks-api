@@ -160,6 +160,10 @@ paths:
         in: query
         name: page
         type: string
+      - description: limit
+        in: query
+        name: limit
+        type: string
       produces:
       - application/json
       responses:
@@ -242,6 +246,10 @@ paths:
       - description: page
         in: query
         name: page
+        type: string
+      - description: limit
+        in: query
+        name: limit
         type: string
       produces:
       - application/json

@@ -48,6 +48,12 @@ const docTemplate = `{
                         "description": "page",
                         "name": "page",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -177,6 +183,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "page",
                         "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "limit",
+                        "name": "limit",
                         "in": "query"
                     }
                 ],

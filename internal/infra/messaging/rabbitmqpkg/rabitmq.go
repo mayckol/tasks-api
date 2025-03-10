@@ -112,3 +112,11 @@ func (r *Messaging) Consume(queueName string) (<-chan Message, error) {
 	}()
 	return out, nil
 }
+
+func (r *Messaging) Cancel(consumerTag string) error {
+	ch, err := r.Client.Channel()
+	if err != nil {
+		return err
+	}
+	return ch.Cancel(consumerTag, false)
+}
