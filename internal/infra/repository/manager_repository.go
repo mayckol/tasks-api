@@ -37,7 +37,7 @@ func (m ManagerRepository) AllTasks(page int) (*[]entity.TaskEntity, error) {
 
 	var tasks []entity.TaskEntity
 	for _, t := range task {
-		tasks = append(tasks, entity.TaskEntity{
+		newTask := entity.TaskEntity{
 			ID:        int(t.ID),
 			UserID:    int(t.UserID),
 			Summary:   t.Summary,
@@ -45,7 +45,11 @@ func (m ManagerRepository) AllTasks(page int) (*[]entity.TaskEntity, error) {
 			CreatedAt: t.CreatedAt,
 			UpdatedAt: t.UpdatedAt,
 			UpdatedBy: int(t.UpdatedBy),
-		})
+		}
+		if t.PerformedAt.Valid {
+			newTask.PerformedAt = &t.PerformedAt.Time
+		}
+		tasks = append(tasks, newTask)
 	}
 
 	return &tasks, nil

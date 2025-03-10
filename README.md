@@ -69,6 +69,13 @@ Modify the values according to your environment.
 docker-compose up -d
 ```
 
+### IMPORTANT
+If you update the .env to run inside the containers you need to rebuild the containers:
+
+```bash
+docker-compose up -d --build
+```
+
 The API will be available at `http://localhost:8080/api/v1`
 
 ### Running Locally

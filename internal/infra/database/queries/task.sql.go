@@ -16,6 +16,7 @@ SELECT id,
        user_id,
        summary,
        is_done,
+       performed_at,
        updated_by,
        created_at,
        updated_at
@@ -31,13 +32,14 @@ type AllTasksParams struct {
 }
 
 type AllTasksRow struct {
-	ID        int32     `json:"id"`
-	UserID    int32     `json:"user_id"`
-	Summary   string    `json:"summary"`
-	IsDone    bool      `json:"is_done"`
-	UpdatedBy int32     `json:"updated_by"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          int32        `json:"id"`
+	UserID      int32        `json:"user_id"`
+	Summary     string       `json:"summary"`
+	IsDone      bool         `json:"is_done"`
+	PerformedAt sql.NullTime `json:"performed_at"`
+	UpdatedBy   int32        `json:"updated_by"`
+	CreatedAt   time.Time    `json:"created_at"`
+	UpdatedAt   time.Time    `json:"updated_at"`
 }
 
 func (q *Queries) AllTasks(ctx context.Context, arg AllTasksParams) ([]AllTasksRow, error) {
@@ -54,6 +56,7 @@ func (q *Queries) AllTasks(ctx context.Context, arg AllTasksParams) ([]AllTasksR
 			&i.UserID,
 			&i.Summary,
 			&i.IsDone,
+			&i.PerformedAt,
 			&i.UpdatedBy,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -76,6 +79,7 @@ SELECT id,
        user_id,
        summary,
        is_done,
+       performed_at,
        updated_by,
        created_at,
        updated_at
@@ -93,13 +97,14 @@ type AllTasksByUserParams struct {
 }
 
 type AllTasksByUserRow struct {
-	ID        int32     `json:"id"`
-	UserID    int32     `json:"user_id"`
-	Summary   string    `json:"summary"`
-	IsDone    bool      `json:"is_done"`
-	UpdatedBy int32     `json:"updated_by"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          int32        `json:"id"`
+	UserID      int32        `json:"user_id"`
+	Summary     string       `json:"summary"`
+	IsDone      bool         `json:"is_done"`
+	PerformedAt sql.NullTime `json:"performed_at"`
+	UpdatedBy   int32        `json:"updated_by"`
+	CreatedAt   time.Time    `json:"created_at"`
+	UpdatedAt   time.Time    `json:"updated_at"`
 }
 
 func (q *Queries) AllTasksByUser(ctx context.Context, arg AllTasksByUserParams) ([]AllTasksByUserRow, error) {
@@ -116,6 +121,7 @@ func (q *Queries) AllTasksByUser(ctx context.Context, arg AllTasksByUserParams) 
 			&i.UserID,
 			&i.Summary,
 			&i.IsDone,
+			&i.PerformedAt,
 			&i.UpdatedBy,
 			&i.CreatedAt,
 			&i.UpdatedAt,

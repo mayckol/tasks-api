@@ -14,9 +14,9 @@ type TechnicianAllTasksInputDTO struct {
 
 // swagger:model TechnicianAllTasksOutputDTO
 type TechnicianAllTasksOutputDTO struct {
-	Data  []entity.TaskEntity
-	Page  int `json:"page,omitempty"`
-	Total int `json:"total,omitempty"`
+	Data  []entity.TaskEntity `json:"data"`
+	Page  int                 `json:"page,omitempty"`
+	Total int                 `json:"total,omitempty"`
 }
 
 type TechnicianAllTasksUseCase struct {

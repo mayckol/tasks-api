@@ -77,7 +77,7 @@ func (t TechnicianRepository) AllTasksByUser(userID, page int) (*[]entity.TaskEn
 
 	var tasks []entity.TaskEntity
 	for _, t := range task {
-		tasks = append(tasks, entity.TaskEntity{
+		newTask := entity.TaskEntity{
 			ID:        int(t.ID),
 			UserID:    int(t.UserID),
 			Summary:   t.Summary,
@@ -85,7 +85,11 @@ func (t TechnicianRepository) AllTasksByUser(userID, page int) (*[]entity.TaskEn
 			CreatedAt: t.CreatedAt,
 			UpdatedAt: t.UpdatedAt,
 			UpdatedBy: int(t.UpdatedBy),
-		})
+		}
+		if t.PerformedAt.Valid {
+			newTask.PerformedAt = &t.PerformedAt.Time
+		}
+		tasks = append(tasks, newTask)
 	}
 
 	return &tasks, nil
