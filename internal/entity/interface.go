@@ -12,3 +12,9 @@ type TechnicianRepository interface {
 	UpdateTask(input TaskEntity) (int, error)
 	AllTasksByUser(userID, page int) (*[]TaskEntity, error)
 }
+
+type ManagerRepository interface {
+	DeleteTask(input TaskEntity) error
+	AllTasks(page int) (*[]TaskEntity, error)
+	CountTasks() (int, error)
+}

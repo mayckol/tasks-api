@@ -90,6 +90,7 @@ func (t TechnicianRepository) CountTasksByUser(userID int) (int, error) {
 
 	return int(count), nil
 }
+
 func (t TechnicianRepository) FindTask(taskID, userID int) (*entity.TaskEntity, error) {
 	task, err := t.q.FindTaskByID(context.Background(), queries.FindTaskByIDParams{
 		ID:     int32(taskID),

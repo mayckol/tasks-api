@@ -162,7 +162,7 @@ func (a *TechnicianHandler) UpdateTask(w http.ResponseWriter, r *http.Request) {
 // @Accept */*
 // @Produce json
 // @Param page query string false "page"
-// @Success 201 {object} usecase.TechnicianFindTaskOutputDTO
+// @Success 200 {object} usecase.TechnicianAllTasksOutputDTO
 // @Failure 400 {string} {object} "invalid request"
 // @Failure 401 {string} {object} "unauthorized"
 // @Failure 404 {string} {object} "not found"

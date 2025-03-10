@@ -14,6 +14,7 @@ import (
 type HandlersContainer struct {
 	UserHandler       web.UserHandler
 	TechnicianHandler web.TechnicianHandler
+	ManagerHandler    web.ManagerHandler
 }
 
 func StartHttpHandler(hc *HandlersContainer, port int) *chi.Mux {
@@ -45,6 +46,14 @@ func StartHttpHandler(hc *HandlersContainer, port int) *chi.Mux {
 						r.Patch("/{task_id}", hc.TechnicianHandler.UpdateTask)
 						r.Get("/{task_id}", hc.TechnicianHandler.FindTask)
 						r.Get("/", hc.TechnicianHandler.AllTasks)
+					})
+				})
+				r.Route("/manager", func(r chi.Router) {
+					r.Group(func(r chi.Router) {
+						r.Use(middlewarepkg.AuthorizeMiddlewareFunc())
+						r.Route("/task", func(r chi.Router) {
+							r.Get("/", hc.ManagerHandler.AllTasks)
+						})
 					})
 				})
 			})

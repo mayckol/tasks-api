@@ -133,6 +133,19 @@ func (q *Queries) AllTasksByUser(ctx context.Context, arg AllTasksByUserParams) 
 	return items, nil
 }
 
+const countTasks = `-- name: CountTasks :one
+SELECT COUNT(*) as total
+FROM tasks
+WHERE deleted_at IS NULL
+`
+
+func (q *Queries) CountTasks(ctx context.Context) (int64, error) {
+	row := q.queryRow(ctx, q.countTasksStmt, countTasks)
+	var total int64
+	err := row.Scan(&total)
+	return total, err
+}
+
 const countTasksByUser = `-- name: CountTasksByUser :one
 SELECT COUNT(*) as total
 FROM tasks
@@ -145,6 +158,23 @@ func (q *Queries) CountTasksByUser(ctx context.Context, userID int32) (int64, er
 	var total int64
 	err := row.Scan(&total)
 	return total, err
+}
+
+const deleteTask = `-- name: DeleteTask :execresult
+UPDATE tasks
+SET deleted_at = now(),
+    updated_at = now(),
+    updated_by = ?
+WHERE id = ? and deleted_at is null
+`
+
+type DeleteTaskParams struct {
+	UpdatedBy int32 `json:"updated_by"`
+	ID        int32 `json:"id"`
+}
+
+func (q *Queries) DeleteTask(ctx context.Context, arg DeleteTaskParams) (sql.Result, error) {
+	return q.exec(ctx, q.deleteTaskStmt, deleteTask, arg.UpdatedBy, arg.ID)
 }
 
 const findTaskByID = `-- name: FindTaskByID :one

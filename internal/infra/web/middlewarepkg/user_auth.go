@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 	"tasks-api/internal/auth/jwtpkg"
+	"tasks-api/internal/role"
 )
 
 type AuthKey struct{}
@@ -25,7 +26,7 @@ func AuthenticationMiddlewareFunc(tokenMaker jwtpkg.TokenServiceInterface) func(
 	}
 }
 
-func AuthorizeMiddlewareFunc(roleID int) func(http.Handler) http.Handler {
+func AuthorizeMiddlewareFunc() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			claims, ok := r.Context().Value(AuthKey{}).(*jwtpkg.UserClaims)
@@ -34,7 +35,7 @@ func AuthorizeMiddlewareFunc(roleID int) func(http.Handler) http.Handler {
 				return
 			}
 
-			if claims.RoleID != roleID {
+			if claims.RoleID != role.MANAGER {
 				http.Error(w, "forbidden", http.StatusForbidden)
 				return
 			}

@@ -1,5 +1,37 @@
 basePath: /api/v1
 definitions:
+  tasks-api_internal_entity.TaskEntity:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      deleted_by:
+        type: integer
+      id:
+        type: integer
+      is_done:
+        type: boolean
+      summary:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  tasks-api_internal_usecase.ManagerAllTasksOutputDTO:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/tasks-api_internal_entity.TaskEntity'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
   tasks-api_internal_usecase.NewUserInputDTO:
     properties:
       email:
@@ -40,6 +72,17 @@ definitions:
       access_token:
         type: string
       role_id:
+        type: integer
+    type: object
+  tasks-api_internal_usecase.TechnicianAllTasksOutputDTO:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/tasks-api_internal_entity.TaskEntity'
+        type: array
+      page:
+        type: integer
+      total:
         type: integer
     type: object
   tasks-api_internal_usecase.TechnicianFindTaskOutputDTO:
@@ -105,6 +148,48 @@ info:
   title: Swagger Tasks API
   version: "1.0"
 paths:
+  /manager/task:
+    get:
+      consumes:
+      - '*/*'
+      description: all tasks.
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tasks-api_internal_usecase.ManagerAllTasksOutputDTO'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "403":
+          description: forbidden
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: all tasks.
+      tags:
+      - Manager
   /technician/task:
     get:
       consumes:
@@ -118,10 +203,10 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
-            $ref: '#/definitions/tasks-api_internal_usecase.TechnicianFindTaskOutputDTO'
+            $ref: '#/definitions/tasks-api_internal_usecase.TechnicianAllTasksOutputDTO'
         "400":
           description: invalid request
           schema:

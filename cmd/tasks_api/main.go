@@ -57,6 +57,7 @@ func main() {
 	httpHandler := server.StartHttpHandler(&server.HandlersContainer{
 		UserHandler:       *web.NewUserHandler(envs, uRepo, jwtService, v),
 		TechnicianHandler: *web.NewTechnicianHandler(envs, repository.NewTechnicianRepository(q), v, notifyService),
+		ManagerHandler:    *web.NewManagerHandler(envs, repository.NewManagerRepository(q), v),
 	}, envs.WebServerPort)
 
 	s := server.NewServer(envs, httpHandler)

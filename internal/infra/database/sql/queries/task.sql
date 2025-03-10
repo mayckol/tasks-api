@@ -59,11 +59,23 @@ FROM tasks
 WHERE user_id = ?
   AND deleted_at IS NULL;
 
+-- name: CountTasks :one
+SELECT COUNT(*) as total
+FROM tasks
+WHERE deleted_at IS NULL;
+
 
 -- name: UpdateTask :execresult
 UPDATE tasks
 SET updated_at = now(),
     summary = ?,
     is_done = ?,
+    updated_by = ?
+WHERE id = ? and deleted_at is null;
+
+-- name: DeleteTask :execresult
+UPDATE tasks
+SET deleted_at = now(),
+    updated_at = now(),
     updated_by = ?
 WHERE id = ? and deleted_at is null;

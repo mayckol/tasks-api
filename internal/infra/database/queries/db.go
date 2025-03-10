@@ -30,8 +30,14 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.allTasksByUserStmt, err = db.PrepareContext(ctx, allTasksByUser); err != nil {
 		return nil, fmt.Errorf("error preparing query AllTasksByUser: %w", err)
 	}
+	if q.countTasksStmt, err = db.PrepareContext(ctx, countTasks); err != nil {
+		return nil, fmt.Errorf("error preparing query CountTasks: %w", err)
+	}
 	if q.countTasksByUserStmt, err = db.PrepareContext(ctx, countTasksByUser); err != nil {
 		return nil, fmt.Errorf("error preparing query CountTasksByUser: %w", err)
+	}
+	if q.deleteTaskStmt, err = db.PrepareContext(ctx, deleteTask); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteTask: %w", err)
 	}
 	if q.deleteUserStmt, err = db.PrepareContext(ctx, deleteUser); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteUser: %w", err)
@@ -69,9 +75,19 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing allTasksByUserStmt: %w", cerr)
 		}
 	}
+	if q.countTasksStmt != nil {
+		if cerr := q.countTasksStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countTasksStmt: %w", cerr)
+		}
+	}
 	if q.countTasksByUserStmt != nil {
 		if cerr := q.countTasksByUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing countTasksByUserStmt: %w", cerr)
+		}
+	}
+	if q.deleteTaskStmt != nil {
+		if cerr := q.deleteTaskStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteTaskStmt: %w", cerr)
 		}
 	}
 	if q.deleteUserStmt != nil {
@@ -150,7 +166,9 @@ type Queries struct {
 	tx                    *sql.Tx
 	allTasksStmt          *sql.Stmt
 	allTasksByUserStmt    *sql.Stmt
+	countTasksStmt        *sql.Stmt
 	countTasksByUserStmt  *sql.Stmt
+	deleteTaskStmt        *sql.Stmt
 	deleteUserStmt        *sql.Stmt
 	findTaskByIDStmt      *sql.Stmt
 	findTasksByUserIDStmt *sql.Stmt
@@ -166,7 +184,9 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		tx:                    tx,
 		allTasksStmt:          q.allTasksStmt,
 		allTasksByUserStmt:    q.allTasksByUserStmt,
+		countTasksStmt:        q.countTasksStmt,
 		countTasksByUserStmt:  q.countTasksByUserStmt,
+		deleteTaskStmt:        q.deleteTaskStmt,
 		deleteUserStmt:        q.deleteUserStmt,
 		findTaskByIDStmt:      q.findTaskByIDStmt,
 		findTasksByUserIDStmt: q.findTasksByUserIDStmt,
