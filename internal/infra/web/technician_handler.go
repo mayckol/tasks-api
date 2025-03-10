@@ -162,7 +162,8 @@ func (a *TechnicianHandler) UpdateTask(w http.ResponseWriter, r *http.Request) {
 // @Tags Technician
 // @Accept */*
 // @Produce json
-// @Param page query string false "page"
+// @Param page  query string false "page"
+// @Param limit query string false "limit"
 // @Success 200 {object} usecase.TechnicianAllTasksOutputDTO
 // @Failure 400 {string} {object} "invalid request"
 // @Failure 401 {string} {object} "unauthorized"
@@ -194,9 +195,21 @@ func (a *TechnicianHandler) AllTasks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	limit := r.URL.Query().Get("limit")
+	if limit == "" {
+		limit = "10"
+	}
+
+	l, err := strconv.Atoi(limit)
+	if err != nil {
+		presenter.JSONPresenter(w, http.StatusBadRequest, nil, errorpkg.ParseJsonError)
+		return
+	}
+
 	var input usecase.TechnicianAllTasksInputDTO
 	input.UserID = userID
 	input.Page = p
+	input.Limit = l
 
 	invalidFields, isFailure := a.validator.Validate(input)
 	if isFailure {

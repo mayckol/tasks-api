@@ -4,12 +4,14 @@ import (
 	"net/http"
 	"tasks-api/internal/entity"
 	"tasks-api/internal/errorpkg"
+	"tasks-api/utils"
 )
 
 // swagger:model TechnicianAllTasksInputDTO
 type TechnicianAllTasksInputDTO struct {
 	UserID int `json:"user_id" validate:"required"`
-	Page   int `json:"page,omitempty"`
+	Page   int `json:"page,omitempty" validate:"min=1"`
+	Limit  int `json:"limit,omitempty" validate:"min=1"`
 }
 
 // swagger:model TechnicianAllTasksOutputDTO
@@ -24,7 +26,14 @@ type TechnicianAllTasksUseCase struct {
 }
 
 func (n *TechnicianAllTasksUseCase) Execute(input TechnicianAllTasksInputDTO, userID int) (*TechnicianAllTasksOutputDTO, *errorpkg.AppError) {
-	tasks, err := n.TechnicianRepository.AllTasksByUser(userID, input.Page)
+	paginationFilter := entity.PaginationFilter{
+		Page:  input.Page,
+		Limit: input.Limit,
+	}
+
+	utils.HandlePagination(&paginationFilter)
+
+	tasks, err := n.TechnicianRepository.AllTasksByUser(userID, paginationFilter)
 	if err != nil {
 		return nil, errorpkg.Wrap("failed to find tasks", http.StatusInternalServerError, err)
 	}

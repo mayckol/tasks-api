@@ -31,10 +31,16 @@ func TestTechnicianAllTasksUseCase_Execute(t *testing.T) {
 	for _, tt := range testsSuites {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.isFailed {
-				repoMock.On("AllTasksByUser", 1, 1).Return(&[]entity.TaskEntity{}, errors.New("error"))
+				repoMock.On("AllTasksByUser", 1, entity.PaginationFilter{
+					Page:  1,
+					Limit: 10,
+				}).Return(&[]entity.TaskEntity{}, errors.New("error"))
 				repoMock.On("CountTasksByUser", 1).Return(0, errors.New("error"))
 			} else {
-				repoMock.On("AllTasksByUser", 1, 1).Return(&[]entity.TaskEntity{}, nil)
+				repoMock.On("AllTasksByUser", 1, entity.PaginationFilter{
+					Page:  1,
+					Limit: 10,
+				}).Return(&[]entity.TaskEntity{}, nil)
 				repoMock.On("CountTasksByUser", 1).Return(0, nil)
 			}
 
