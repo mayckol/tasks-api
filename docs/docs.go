@@ -24,6 +24,57 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/technician/task": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "new task.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Technician"
+                ],
+                "summary": "new task.",
+                "parameters": [
+                    {
+                        "description": "task",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/tasks-api_internal_usecase.TechnicianNewTaskInputDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/tasks-api_internal_usecase.TechnicianNewTaskOutputDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/user": {
             "post": {
                 "description": "new user.",
@@ -178,6 +229,27 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "tasks-api_internal_usecase.TechnicianNewTaskInputDTO": {
+            "type": "object",
+            "required": [
+                "summary"
+            ],
+            "properties": {
+                "summary": {
+                    "type": "string",
+                    "maxLength": 2500,
+                    "minLength": 3
+                }
+            }
+        },
+        "tasks-api_internal_usecase.TechnicianNewTaskOutputDTO": {
+            "type": "object",
+            "properties": {
+                "task_id": {
                     "type": "integer"
                 }
             }
