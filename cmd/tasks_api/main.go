@@ -16,8 +16,8 @@ import (
 	"tasks-api/internal/infra/notify"
 	"tasks-api/internal/infra/repository"
 	"tasks-api/internal/infra/web"
+	server2 "tasks-api/internal/infra/web/server"
 	"tasks-api/internal/validation"
-	"tasks-api/server"
 	"time"
 )
 
@@ -54,13 +54,13 @@ func main() {
 
 	notifyService := notify.SimpleNotifier{}
 
-	httpHandler := server.StartHttpHandler(&server.HandlersContainer{
+	httpHandler := server2.StartHttpHandler(&server2.HandlersContainer{
 		UserHandler:       *web.NewUserHandler(envs, uRepo, jwtService, v),
 		TechnicianHandler: *web.NewTechnicianHandler(envs, repository.NewTechnicianRepository(q), v, notifyService),
 		ManagerHandler:    *web.NewManagerHandler(envs, repository.NewManagerRepository(q), v),
 	}, envs.WebServerPort)
 
-	s := server.NewServer(envs, httpHandler)
+	s := server2.NewServer(envs, httpHandler)
 
 	_ = chi.Walk(httpHandler, func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
 		fmt.Printf("[%s]: '%s' has %d middlewares\n", method, route, len(middlewares))
