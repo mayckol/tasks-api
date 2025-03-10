@@ -28,6 +28,3 @@ go.work.sum
 # IDE files
 .idea/
 .vscode/
-
-# Collection endpoints file
-tasks_api-collection.json
