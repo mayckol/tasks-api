@@ -8,10 +8,12 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 	_ "tasks-api/docs"
 	"tasks-api/internal/infra/web"
+	"tasks-api/internal/infra/web/middlewarepkg"
 )
 
 type HandlersContainer struct {
-	UserHandler web.UserHandler
+	UserHandler       web.UserHandler
+	TechnicianHandler web.TechnicianHandler
 }
 
 func StartHttpHandler(hc *HandlersContainer, port int) *chi.Mux {
@@ -34,6 +36,14 @@ func StartHttpHandler(hc *HandlersContainer, port int) *chi.Mux {
 			r.Route("/user", func(r chi.Router) {
 				r.Post("/", hc.UserHandler.NewUser)
 				r.Post("/signin", hc.UserHandler.Signin)
+			})
+			r.Group(func(r chi.Router) {
+				r.Use(middlewarepkg.AuthenticationMiddlewareFunc(hc.UserHandler.JWTService))
+				r.Route("/technician", func(r chi.Router) {
+					r.Route("/task", func(r chi.Router) {
+						r.Post("/", hc.TechnicianHandler.Task)
+					})
+				})
 			})
 		})
 	})

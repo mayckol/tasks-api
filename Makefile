@@ -1,7 +1,7 @@
 createmigration:
 	@echo "Enter migration name:"
 	@read name; \
-	migrate create -ext sql -dir internal/database/sql/migrations -seq $$name
+	migrate create -ext sql -dir internal/infra/database/sql/migrations -seq $$name
 
 migrateup:
 	@MYSQL_DATABASE=$(shell grep -E '^MYSQL_DATABASE=' .env | cut -d'=' -f2 | xargs) && \
@@ -10,7 +10,7 @@ migrateup:
 	MYSQL_HOST=$(shell grep -E '^MYSQL_HOST=' .env | cut -d'=' -f2 | xargs) && \
 	MYSQL_PORT=$(shell grep -E '^MYSQL_PORT=' .env | cut -d'=' -f2 | xargs) && \
 	DATABASE_URL="mysql://$${MYSQL_USER}:$${MYSQL_PASSWORD}@tcp($${MYSQL_HOST}:$${MYSQL_PORT})/$${MYSQL_DATABASE}" && \
-	migrate -path ./internal/database/sql/migrations -database "$${DATABASE_URL}" -verbose up
+	migrate -path ./internal/infra/database/sql/migrations -database "$${DATABASE_URL}" -verbose up
 
 migratedown:
 	@MYSQL_DATABASE=$(shell grep -E '^MYSQL_DATABASE=' .env | cut -d'=' -f2 | xargs) && \
@@ -19,7 +19,7 @@ migratedown:
 	MYSQL_HOST=$(shell grep -E '^MYSQL_HOST=' .env | cut -d'=' -f2 | xargs) && \
 	MYSQL_PORT=$(shell grep -E '^MYSQL_PORT=' .env | cut -d'=' -f2 | xargs) && \
 	DATABASE_URL="mysql://$${MYSQL_USER}:$${MYSQL_PASSWORD}@tcp($${MYSQL_HOST}:$${MYSQL_PORT})/$${MYSQL_DATABASE}" && \
-	migrate -path ./internal/database/sql/migrations -database "$${DATABASE_URL}" -verbose down
+	migrate -path ./internal/infra/database/sql/migrations -database "$${DATABASE_URL}" -verbose down
 
 sqlgen:
 	@sqlc generate

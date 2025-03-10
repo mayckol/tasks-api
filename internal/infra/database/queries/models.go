@@ -23,6 +23,7 @@ type Task struct {
 	UpdatedBy int32         `json:"updated_by"`
 	DeletedAt sql.NullTime  `json:"deleted_at"`
 	DeletedBy sql.NullInt32 `json:"deleted_by"`
+	IsDone    bool          `json:"is_done"`
 }
 
 type User struct {

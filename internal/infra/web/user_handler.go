@@ -20,7 +20,7 @@ var invalidTokenClaimsErr = errors.New("invalid token claims")
 type UserHandler struct {
 	envs           *configs.EnvVars
 	userRepository entity.UserRepository
-	jWTService     jwtpkg.TokenServiceInterface
+	JWTService     jwtpkg.TokenServiceInterface
 	validator      validation.ValidatorInterface
 }
 
@@ -33,7 +33,7 @@ func NewUserHandler(
 	return &UserHandler{
 		envs:           envs,
 		userRepository: userRepository,
-		jWTService:     jwtService,
+		JWTService:     jwtService,
 		validator:      validator,
 	}
 }
@@ -103,7 +103,7 @@ func (a *UserHandler) Signin(w http.ResponseWriter, r *http.Request) {
 
 	uc := usecase.SigninUseCase{
 		UserRepository: a.userRepository,
-		JWTService:     a.jWTService,
+		JWTService:     a.JWTService,
 	}
 	output, appError := uc.Execute(input)
 	if appError != nil {

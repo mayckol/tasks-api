@@ -50,9 +50,12 @@ func main() {
 	v := validation.NewWrapper()
 
 	jwtService := jwtpkg.NewJWTService(envs.JwtSecret)
+
 	httpHandler := server.StartHttpHandler(&server.HandlersContainer{
-		UserHandler: *web.NewUserHandler(envs, uRepo, jwtService, v),
+		UserHandler:       *web.NewUserHandler(envs, uRepo, jwtService, v),
+		TechnicianHandler: *web.NewTechnicianHandler(envs, repository.NewTechnicianRepository(q), v),
 	}, envs.WebServerPort)
+
 	s := server.NewServer(envs, httpHandler)
 
 	_ = chi.Walk(httpHandler, func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {

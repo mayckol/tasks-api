@@ -27,8 +27,20 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.deleteUserStmt, err = db.PrepareContext(ctx, deleteUser); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteUser: %w", err)
 	}
+	if q.findTaskByIDStmt, err = db.PrepareContext(ctx, findTaskByID); err != nil {
+		return nil, fmt.Errorf("error preparing query FindTaskByID: %w", err)
+	}
+	if q.findTasksByUserIDStmt, err = db.PrepareContext(ctx, findTasksByUserID); err != nil {
+		return nil, fmt.Errorf("error preparing query FindTasksByUserID: %w", err)
+	}
+	if q.storeTaskStmt, err = db.PrepareContext(ctx, storeTask); err != nil {
+		return nil, fmt.Errorf("error preparing query StoreTask: %w", err)
+	}
 	if q.storeUserStmt, err = db.PrepareContext(ctx, storeUser); err != nil {
 		return nil, fmt.Errorf("error preparing query StoreUser: %w", err)
+	}
+	if q.updateTaskStmt, err = db.PrepareContext(ctx, updateTask); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateTask: %w", err)
 	}
 	if q.userByEmailStmt, err = db.PrepareContext(ctx, userByEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query UserByEmail: %w", err)
@@ -43,9 +55,29 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing deleteUserStmt: %w", cerr)
 		}
 	}
+	if q.findTaskByIDStmt != nil {
+		if cerr := q.findTaskByIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing findTaskByIDStmt: %w", cerr)
+		}
+	}
+	if q.findTasksByUserIDStmt != nil {
+		if cerr := q.findTasksByUserIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing findTasksByUserIDStmt: %w", cerr)
+		}
+	}
+	if q.storeTaskStmt != nil {
+		if cerr := q.storeTaskStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing storeTaskStmt: %w", cerr)
+		}
+	}
 	if q.storeUserStmt != nil {
 		if cerr := q.storeUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing storeUserStmt: %w", cerr)
+		}
+	}
+	if q.updateTaskStmt != nil {
+		if cerr := q.updateTaskStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateTaskStmt: %w", cerr)
 		}
 	}
 	if q.userByEmailStmt != nil {
@@ -90,19 +122,27 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db              DBTX
-	tx              *sql.Tx
-	deleteUserStmt  *sql.Stmt
-	storeUserStmt   *sql.Stmt
-	userByEmailStmt *sql.Stmt
+	db                    DBTX
+	tx                    *sql.Tx
+	deleteUserStmt        *sql.Stmt
+	findTaskByIDStmt      *sql.Stmt
+	findTasksByUserIDStmt *sql.Stmt
+	storeTaskStmt         *sql.Stmt
+	storeUserStmt         *sql.Stmt
+	updateTaskStmt        *sql.Stmt
+	userByEmailStmt       *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:              tx,
-		tx:              tx,
-		deleteUserStmt:  q.deleteUserStmt,
-		storeUserStmt:   q.storeUserStmt,
-		userByEmailStmt: q.userByEmailStmt,
+		db:                    tx,
+		tx:                    tx,
+		deleteUserStmt:        q.deleteUserStmt,
+		findTaskByIDStmt:      q.findTaskByIDStmt,
+		findTasksByUserIDStmt: q.findTasksByUserIDStmt,
+		storeTaskStmt:         q.storeTaskStmt,
+		storeUserStmt:         q.storeUserStmt,
+		updateTaskStmt:        q.updateTaskStmt,
+		userByEmailStmt:       q.userByEmailStmt,
 	}
 }
