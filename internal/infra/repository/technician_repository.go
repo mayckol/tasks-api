@@ -53,6 +53,43 @@ func (t TechnicianRepository) UpdateTask(input entity.TaskEntity) (int, error) {
 	return int(rowsAffected), nil
 }
 
+func (t TechnicianRepository) AllTasksByUser(userID, page int) (*[]entity.TaskEntity, error) {
+	// this is a hardcoded value, but it should be dynamic
+	const pageSize = 10
+	offset := (page - 1) * pageSize
+	task, err := t.q.AllTasksByUser(context.Background(), queries.AllTasksByUserParams{
+		UserID: int32(userID),
+		Limit:  int32(pageSize),
+		Offset: int32(offset),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var tasks []entity.TaskEntity
+	for _, t := range task {
+		tasks = append(tasks, entity.TaskEntity{
+			ID:        int(t.ID),
+			UserID:    int(t.UserID),
+			Summary:   t.Summary,
+			IsDone:    t.IsDone,
+			CreatedAt: t.CreatedAt,
+			UpdatedAt: t.UpdatedAt,
+			UpdatedBy: int(t.UpdatedBy),
+		})
+	}
+
+	return &tasks, nil
+}
+
+func (t TechnicianRepository) CountTasksByUser(userID int) (int, error) {
+	count, err := t.q.CountTasksByUser(context.Background(), int32(userID))
+	if err != nil {
+		return 0, err
+	}
+
+	return int(count), nil
+}
 func (t TechnicianRepository) FindTask(taskID, userID int) (*entity.TaskEntity, error) {
 	task, err := t.q.FindTaskByID(context.Background(), queries.FindTaskByIDParams{
 		ID:     int32(taskID),

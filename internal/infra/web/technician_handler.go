@@ -152,6 +152,67 @@ func (a *TechnicianHandler) UpdateTask(w http.ResponseWriter, r *http.Request) {
 	presenter.JSONPresenter(w, http.StatusCreated, output, nil)
 }
 
+// AllTasks godoc
+// @Summary all tasks.
+// @Description all tasks.
+// @Tags Technician
+// @Accept */*
+// @Produce json
+// @Param page query string false "page"
+// @Success 201 {object} usecase.TechnicianFindTaskOutputDTO
+// @Failure 400 {string} {object} "invalid request"
+// @Failure 401 {string} {object} "unauthorized"
+// @Failure 404 {string} {object} "not found"
+// @Failure 500 {string} string "internal server error"
+// @Security ApiKeyAuth
+// @Router /technician/task [get]
+func (a *TechnicianHandler) AllTasks(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value(middlewarepkg.AuthKey{}).(*jwtpkg.UserClaims)
+	if !ok {
+		presenter.JSONPresenter(w, http.StatusInternalServerError, nil, invalidTokenClaimsErr)
+		return
+	}
+
+	userID := claims.UserID
+	if userID == 0 {
+		presenter.JSONPresenter(w, http.StatusInternalServerError, nil, invalidTokenClaimsErr)
+		return
+	}
+
+	page := r.URL.Query().Get("page")
+	if page == "" {
+		page = "1"
+	}
+
+	p, err := strconv.Atoi(page)
+	if err != nil {
+		presenter.JSONPresenter(w, http.StatusBadRequest, nil, errorpkg.ParseJsonError)
+		return
+	}
+
+	var input usecase.TechnicianAllTasksInputDTO
+	input.UserID = userID
+	input.Page = p
+
+	invalidFields, isFailure := a.validator.Validate(input)
+	if isFailure {
+		presenter.JSONPresenter(w, http.StatusBadRequest, invalidFields, errorpkg.ValidateFieldsError)
+		return
+	}
+
+	uc := usecase.TechnicianAllTasksUseCase{
+		TechnicianRepository: a.technicianRepository,
+	}
+
+	output, appError := uc.Execute(input, userID)
+	if appError != nil {
+		presenter.JSONPresenter(w, appError.StatusCode, nil, appError)
+		return
+	}
+
+	presenter.JSONSingleResPresenter(w, http.StatusOK, output)
+}
+
 // FindTask godoc
 // @Summary find task.
 // @Description find task.
@@ -210,5 +271,5 @@ func (a *TechnicianHandler) FindTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	presenter.JSONSingleResPresenter(w, http.StatusOK, output, nil)
+	presenter.JSONSingleResPresenter(w, http.StatusOK, output)
 }

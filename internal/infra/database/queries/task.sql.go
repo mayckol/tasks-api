@@ -11,6 +11,142 @@ import (
 	"time"
 )
 
+const allTasks = `-- name: AllTasks :many
+SELECT id,
+       user_id,
+       summary,
+       is_done,
+       updated_by,
+       created_at,
+       updated_at
+FROM tasks
+WHERE deleted_at IS NULL
+ORDER BY created_at DESC
+LIMIT ? OFFSET ?
+`
+
+type AllTasksParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+type AllTasksRow struct {
+	ID        int32     `json:"id"`
+	UserID    int32     `json:"user_id"`
+	Summary   string    `json:"summary"`
+	IsDone    bool      `json:"is_done"`
+	UpdatedBy int32     `json:"updated_by"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (q *Queries) AllTasks(ctx context.Context, arg AllTasksParams) ([]AllTasksRow, error) {
+	rows, err := q.query(ctx, q.allTasksStmt, allTasks, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AllTasksRow
+	for rows.Next() {
+		var i AllTasksRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Summary,
+			&i.IsDone,
+			&i.UpdatedBy,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const allTasksByUser = `-- name: AllTasksByUser :many
+SELECT id,
+       user_id,
+       summary,
+       is_done,
+       updated_by,
+       created_at,
+       updated_at
+FROM tasks
+WHERE user_id = ?
+  AND deleted_at IS NULL
+ORDER BY created_at DESC
+LIMIT ? OFFSET ?
+`
+
+type AllTasksByUserParams struct {
+	UserID int32 `json:"user_id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+type AllTasksByUserRow struct {
+	ID        int32     `json:"id"`
+	UserID    int32     `json:"user_id"`
+	Summary   string    `json:"summary"`
+	IsDone    bool      `json:"is_done"`
+	UpdatedBy int32     `json:"updated_by"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (q *Queries) AllTasksByUser(ctx context.Context, arg AllTasksByUserParams) ([]AllTasksByUserRow, error) {
+	rows, err := q.query(ctx, q.allTasksByUserStmt, allTasksByUser, arg.UserID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AllTasksByUserRow
+	for rows.Next() {
+		var i AllTasksByUserRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Summary,
+			&i.IsDone,
+			&i.UpdatedBy,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const countTasksByUser = `-- name: CountTasksByUser :one
+SELECT COUNT(*) as total
+FROM tasks
+WHERE user_id = ?
+  AND deleted_at IS NULL
+`
+
+func (q *Queries) CountTasksByUser(ctx context.Context, userID int32) (int64, error) {
+	row := q.queryRow(ctx, q.countTasksByUserStmt, countTasksByUser, userID)
+	var total int64
+	err := row.Scan(&total)
+	return total, err
+}
+
 const findTaskByID = `-- name: FindTaskByID :one
 SELECT id,
        user_id,

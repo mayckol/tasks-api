@@ -106,6 +106,43 @@ info:
   version: "1.0"
 paths:
   /technician/task:
+    get:
+      consumes:
+      - '*/*'
+      description: all tasks.
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/tasks-api_internal_usecase.TechnicianFindTaskOutputDTO'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: all tasks.
+      tags:
+      - Technician
     post:
       consumes:
       - '*/*'

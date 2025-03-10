@@ -26,6 +26,40 @@ SELECT id,
 FROM tasks
 WHERE id = ? and user_id = ? and deleted_at is null;
 
+-- name: AllTasksByUser :many
+SELECT id,
+       user_id,
+       summary,
+       is_done,
+       updated_by,
+       created_at,
+       updated_at
+FROM tasks
+WHERE user_id = ?
+  AND deleted_at IS NULL
+ORDER BY created_at DESC
+LIMIT ? OFFSET ?;
+
+-- name: AllTasks :many
+SELECT id,
+       user_id,
+       summary,
+       is_done,
+       updated_by,
+       created_at,
+       updated_at
+FROM tasks
+WHERE deleted_at IS NULL
+ORDER BY created_at DESC
+LIMIT ? OFFSET ?;
+
+-- name: CountTasksByUser :one
+SELECT COUNT(*) as total
+FROM tasks
+WHERE user_id = ?
+  AND deleted_at IS NULL;
+
+
 -- name: UpdateTask :execresult
 UPDATE tasks
 SET updated_at = now(),
