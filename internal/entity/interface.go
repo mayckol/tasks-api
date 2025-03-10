@@ -8,5 +8,5 @@ type UserRepository interface {
 type TechnicianRepository interface {
 	NewTask(input TaskEntity) (int, error)
 	FindTask(taskID int) (*TaskEntity, error)
-	UpdateTask(taskID int, task TaskEntity) error
+	UpdateTask(input TaskEntity) (int, error)
 }

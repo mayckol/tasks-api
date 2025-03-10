@@ -28,6 +28,8 @@ WHERE id = ? and deleted_at is null;
 
 -- name: UpdateTask :execresult
 UPDATE tasks
-SET summary = ?,
+SET updated_at = now(),
+    summary = ?,
+    is_done = ?,
     updated_by = ?
-WHERE id = ?;
+WHERE id = ? and deleted_at is null;

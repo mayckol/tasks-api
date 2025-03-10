@@ -33,6 +33,26 @@ func (t TechnicianRepository) NewTask(input entity.TaskEntity) (int, error) {
 	return int(lastID), nil
 }
 
+func (t TechnicianRepository) UpdateTask(input entity.TaskEntity) (int, error) {
+	res, err := t.q.UpdateTask(context.Background(), queries.UpdateTaskParams{
+		Summary:   input.Summary,
+		UpdatedBy: int32(input.UpdatedBy),
+		IsDone:    input.IsDone,
+		ID:        int32(input.ID),
+	})
+
+	if err != nil {
+		return 0, err
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(rowsAffected), nil
+}
+
 func (t TechnicianRepository) FindTask(taskID int) (*entity.TaskEntity, error) {
 	task, err := t.q.FindTaskByID(context.Background(), int32(taskID))
 	if err != nil {
@@ -47,14 +67,4 @@ func (t TechnicianRepository) FindTask(taskID int) (*entity.TaskEntity, error) {
 		UpdatedAt: task.UpdatedAt,
 		UpdatedBy: int(task.UpdatedBy),
 	}, nil
-}
-
-func (t TechnicianRepository) UpdateTask(taskID int, task entity.TaskEntity) error {
-	_, err := t.q.UpdateTask(context.Background(), queries.UpdateTaskParams{
-		Summary:   task.Summary,
-		UpdatedBy: int32(task.UpdatedBy),
-		ID:        int32(taskID),
-	})
-
-	return err
 }

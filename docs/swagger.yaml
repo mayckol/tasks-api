@@ -56,6 +56,20 @@ definitions:
       task_id:
         type: integer
     type: object
+  tasks-api_internal_usecase.TechnicianUpdateTaskInputDTO:
+    properties:
+      is_done:
+        type: boolean
+      summary:
+        maxLength: 255
+        minLength: 1
+        type: string
+    type: object
+  tasks-api_internal_usecase.TechnicianUpdateTaskOutputDTO:
+    properties:
+      task_id:
+        type: integer
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -100,6 +114,51 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: new task.
+      tags:
+      - Technician
+  /technician/task/{task_id}:
+    patch:
+      consumes:
+      - '*/*'
+      description: update task.
+      parameters:
+      - description: task id
+        in: query
+        name: task_id
+        required: true
+        type: string
+      - description: task
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/tasks-api_internal_usecase.TechnicianUpdateTaskInputDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/tasks-api_internal_usecase.TechnicianUpdateTaskOutputDTO'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: update task.
       tags:
       - Technician
   /user:

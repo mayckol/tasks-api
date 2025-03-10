@@ -116,17 +116,25 @@ func (q *Queries) StoreTask(ctx context.Context, arg StoreTaskParams) (sql.Resul
 
 const updateTask = `-- name: UpdateTask :execresult
 UPDATE tasks
-SET summary = ?,
+SET updated_at = now(),
+    summary = ?,
+    is_done = ?,
     updated_by = ?
-WHERE id = ?
+WHERE id = ? and deleted_at is null
 `
 
 type UpdateTaskParams struct {
 	Summary   string `json:"summary"`
+	IsDone    bool   `json:"is_done"`
 	UpdatedBy int32  `json:"updated_by"`
 	ID        int32  `json:"id"`
 }
 
 func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) (sql.Result, error) {
-	return q.exec(ctx, q.updateTaskStmt, updateTask, arg.Summary, arg.UpdatedBy, arg.ID)
+	return q.exec(ctx, q.updateTaskStmt, updateTask,
+		arg.Summary,
+		arg.IsDone,
+		arg.UpdatedBy,
+		arg.ID,
+	)
 }

@@ -7,8 +7,7 @@ import (
 
 var ParseJsonError = errors.New("failed to parse json")
 var ValidateFieldsError = errors.New("failed to validate fields")
-var FileSizeLimitExceededError = errors.New("file size limit exceeded")
-var PasswordMismatchError = errors.New("password mismatch")
+var NotFoundError = errors.New("not found")
 
 // AppError is a custom error type for consistent error handling.
 type AppError struct {
