@@ -71,7 +71,7 @@ func (a *TechnicianHandler) Task(w http.ResponseWriter, r *http.Request) {
 
 	invalidFields, isFailure := a.validator.Validate(input)
 	if isFailure {
-		presenter.JSONPresenter(w, http.StatusBadRequest, invalidFields, errorpkg.ValidateFieldsError)
+		presenter.JSONPresenter(w, http.StatusNotAcceptable, invalidFields, errorpkg.ValidateFieldsError)
 		return
 	}
 
