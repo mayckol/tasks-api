@@ -59,19 +59,10 @@ func (t TechnicianRepository) UpdateTask(input entity.TaskEntity) (int, error) {
 }
 
 func (t TechnicianRepository) AllTasksByUser(userID int, filter entity.PaginationFilter) (*[]entity.TaskEntity, error) {
-	if filter.Page == 0 {
-		filter.Page = 1 // default page
-	}
-
-	pageSize := filter.Limit
-	if pageSize == 0 {
-		pageSize = 10 // default page size
-	}
-
-	offset := (filter.Page - 1) * pageSize
+	offset := (filter.Page - 1) * filter.Limit
 	task, err := t.q.AllTasksByUser(context.Background(), queries.AllTasksByUserParams{
 		UserID: int32(userID),
-		Limit:  int32(pageSize),
+		Limit:  int32(filter.Limit),
 		Offset: int32(offset),
 	})
 

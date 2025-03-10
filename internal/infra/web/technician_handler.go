@@ -14,6 +14,7 @@ import (
 	"tasks-api/internal/infra/web/middlewarepkg"
 	"tasks-api/internal/usecase"
 	"tasks-api/internal/validation"
+	"tasks-api/utils"
 )
 
 type TechnicianHandler struct {
@@ -185,22 +186,9 @@ func (a *TechnicianHandler) AllTasks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	page := r.URL.Query().Get("page")
-	if page == "" {
-		page = "1"
-	}
-
-	p, err := strconv.Atoi(page)
-	if err != nil {
-		presenter.JSONPresenter(w, http.StatusBadRequest, nil, errorpkg.ParseJsonError)
-		return
-	}
-
 	limit := r.URL.Query().Get("limit")
-	if limit == "" {
-		limit = "10"
-	}
 
-	l, err := strconv.Atoi(limit)
+	pagFilter, err := utils.PaginationFilterByQueryParams(page, limit)
 	if err != nil {
 		presenter.JSONPresenter(w, http.StatusBadRequest, nil, errorpkg.ParseJsonError)
 		return
@@ -208,8 +196,8 @@ func (a *TechnicianHandler) AllTasks(w http.ResponseWriter, r *http.Request) {
 
 	var input usecase.TechnicianAllTasksInputDTO
 	input.UserID = userID
-	input.Page = p
-	input.Limit = l
+	input.Page = pagFilter.Page
+	input.Limit = pagFilter.Limit
 
 	invalidFields, isFailure := a.validator.Validate(input)
 	if isFailure {

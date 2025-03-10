@@ -1,18 +1,34 @@
 package utils
 
-import "tasks-api/internal/entity"
-
-const (
-	DefaultPage  = 1
-	DefaultLimit = 10
+import (
+	"strconv"
+	"tasks-api/internal/entity"
 )
 
-func HandlePagination(filter *entity.PaginationFilter) {
-	if filter.Page == 0 {
-		filter.Page = DefaultPage
+const (
+	DefaultPageQuery  = "1"
+	DefaultLimitQuery = "10"
+)
+
+func PaginationFilterByQueryParams(page, limit string) (*entity.PaginationFilter, error) {
+	if page == "" {
+		page = DefaultPageQuery
+	}
+	p, err := strconv.Atoi(page)
+	if err != nil {
+		return nil, err
 	}
 
-	if filter.Limit == 0 {
-		filter.Limit = DefaultLimit
+	if limit == "" {
+		limit = DefaultLimitQuery
 	}
+	l, err := strconv.Atoi(limit)
+	if err != nil {
+		return nil, err
+	}
+
+	return &entity.PaginationFilter{
+		Page:  p,
+		Limit: l,
+	}, nil
 }

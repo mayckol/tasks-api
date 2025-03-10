@@ -19,6 +19,6 @@ type TechnicianRepository interface {
 
 type ManagerRepository interface {
 	DeleteTask(taskId, updatedBy int) error
-	AllTasks(page int) (*[]TaskEntity, error)
+	AllTasks(filter PaginationFilter) (*[]TaskEntity, error)
 	CountTasks() (int, error)
 }

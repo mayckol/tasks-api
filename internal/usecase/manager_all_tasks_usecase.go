@@ -8,7 +8,8 @@ import (
 
 // swagger:model ManagerAllTasksInputDTO
 type ManagerAllTasksInputDTO struct {
-	Page int `json:"page,omitempty"`
+	Page  int `json:"page,omitempty" validate:"omitempty,min=1"`
+	Limit int `json:"limit,omitempty" validate:"omitempty,min=1"`
 }
 
 // swagger:model ManagerAllTasksOutputDTO
@@ -23,7 +24,12 @@ type ManagerAllTasksUseCase struct {
 }
 
 func (n *ManagerAllTasksUseCase) Execute(input ManagerAllTasksInputDTO, userID int) (*ManagerAllTasksOutputDTO, *errorpkg.AppError) {
-	tasks, err := n.ManagerRepository.AllTasks(input.Page)
+	paginationFilter := entity.PaginationFilter{
+		Page:  input.Page,
+		Limit: input.Limit,
+	}
+
+	tasks, err := n.ManagerRepository.AllTasks(paginationFilter)
 	if err != nil {
 		return nil, errorpkg.Wrap("failed to create find manager", http.StatusInternalServerError, err)
 	}

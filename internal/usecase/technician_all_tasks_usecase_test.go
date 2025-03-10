@@ -4,6 +4,7 @@ import (
 	"errors"
 	"tasks-api/internal/entity"
 	"tasks-api/internal/infra/repository"
+	"tasks-api/utils"
 	"testing"
 )
 
@@ -48,9 +49,11 @@ func TestTechnicianAllTasksUseCase_Execute(t *testing.T) {
 				TechnicianRepository: repoMock,
 			}
 
+			pagFilter, _ := utils.PaginationFilterByQueryParams(utils.DefaultPageQuery, utils.DefaultLimitQuery)
 			_, err := uc.Execute(TechnicianAllTasksInputDTO{
 				UserID: 1,
-				Page:   1,
+				Page:   pagFilter.Page,
+				Limit:  pagFilter.Limit,
 			}, 1)
 
 			if tt.isFailed && err == nil {

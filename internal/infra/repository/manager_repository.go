@@ -23,12 +23,10 @@ func (m ManagerRepository) DeleteTask(taskId, updatedBy int) error {
 	return err
 }
 
-func (m ManagerRepository) AllTasks(page int) (*[]entity.TaskEntity, error) {
-	// this is a hardcoded value, but it should be dynamic
-	const pageSize = 10
-	offset := (page - 1) * pageSize
+func (m ManagerRepository) AllTasks(filter entity.PaginationFilter) (*[]entity.TaskEntity, error) {
+	offset := (filter.Page - 1) * filter.Limit
 	task, err := m.q.AllTasks(context.Background(), queries.AllTasksParams{
-		Limit:  int32(pageSize),
+		Limit:  int32(filter.Limit),
 		Offset: int32(offset),
 	})
 	if err != nil {

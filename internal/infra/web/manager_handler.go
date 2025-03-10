@@ -12,6 +12,7 @@ import (
 	"tasks-api/internal/infra/web/middlewarepkg"
 	"tasks-api/internal/usecase"
 	"tasks-api/internal/validation"
+	"tasks-api/utils"
 )
 
 type ManagerHandler struct {
@@ -38,7 +39,8 @@ func NewManagerHandler(
 // @Tags Manager
 // @Accept */*
 // @Produce json
-// @Param page query string false "page"
+// @Param page  query string false "page"
+// @Param limit query string false "limit"
 // @Success 200 {object} usecase.ManagerAllTasksOutputDTO
 // @Failure 400 {string} {object} "invalid request"
 // @Failure 401 {string} {object} "unauthorized"
@@ -61,18 +63,17 @@ func (a *ManagerHandler) AllTasks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	page := r.URL.Query().Get("page")
-	if page == "" {
-		page = "1"
-	}
+	limit := r.URL.Query().Get("limit")
 
-	p, err := strconv.Atoi(page)
+	pagFilter, err := utils.PaginationFilterByQueryParams(page, limit)
 	if err != nil {
 		presenter.JSONPresenter(w, http.StatusBadRequest, nil, errorpkg.ParseJsonError)
 		return
 	}
 
 	var input usecase.ManagerAllTasksInputDTO
-	input.Page = p
+	input.Page = pagFilter.Page
+	input.Limit = pagFilter.Limit
 
 	invalidFields, isFailure := a.validator.Validate(input)
 	if isFailure {

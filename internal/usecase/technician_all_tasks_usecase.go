@@ -4,14 +4,13 @@ import (
 	"net/http"
 	"tasks-api/internal/entity"
 	"tasks-api/internal/errorpkg"
-	"tasks-api/utils"
 )
 
 // swagger:model TechnicianAllTasksInputDTO
 type TechnicianAllTasksInputDTO struct {
 	UserID int `json:"user_id" validate:"required"`
-	Page   int `json:"page,omitempty" validate:"min=1"`
-	Limit  int `json:"limit,omitempty" validate:"min=1"`
+	Page   int `json:"page,omitempty" validate:"omitempty,min=1"`
+	Limit  int `json:"limit,omitempty" validate:"omitempty,min=1"`
 }
 
 // swagger:model TechnicianAllTasksOutputDTO
@@ -30,8 +29,6 @@ func (n *TechnicianAllTasksUseCase) Execute(input TechnicianAllTasksInputDTO, us
 		Page:  input.Page,
 		Limit: input.Limit,
 	}
-
-	utils.HandlePagination(&paginationFilter)
 
 	tasks, err := n.TechnicianRepository.AllTasksByUser(userID, paginationFilter)
 	if err != nil {

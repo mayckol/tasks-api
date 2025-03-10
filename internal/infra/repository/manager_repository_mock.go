@@ -14,7 +14,7 @@ func (t *ManagerRepositoryMock) DeleteTask(taskId, updatedBy int) error {
 	return args.Error(0)
 }
 
-func (t *ManagerRepositoryMock) AllTasks(page int) (*[]entity.TaskEntity, error) {
+func (t *ManagerRepositoryMock) AllTasks(page entity.PaginationFilter) (*[]entity.TaskEntity, error) {
 	args := t.Called(page)
 	return args.Get(0).(*[]entity.TaskEntity), args.Error(1)
 }
