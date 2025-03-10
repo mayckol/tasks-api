@@ -48,19 +48,3 @@ type JSONError400Response struct {
 	Data  []validation.InvalidFields `json:"data"`
 	Error string                     `json:"error"`
 }
-
-type ListResponse struct {
-	Data  interface{} `json:"data,omitempty"`
-	Page  int         `json:"page,omitempty"`
-	Total int         `json:"total,omitempty"`
-}
-
-// JSONListPresenter is a dynamic presenter for returning list JSON response.
-func JSONListPresenter(w http.ResponseWriter, res ListResponse) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	if encodeErr := json.NewEncoder(w).Encode(res); encodeErr != nil {
-		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
-	}
-}

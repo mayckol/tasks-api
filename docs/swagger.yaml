@@ -190,6 +190,47 @@ paths:
       summary: all tasks.
       tags:
       - Manager
+  /manager/task/{task_id}:
+    delete:
+      consumes:
+      - '*/*'
+      description: delete task.
+      parameters:
+      - description: Task ID
+        in: path
+        name: task_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "403":
+          description: forbidden
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: delete task.
+      tags:
+      - Manager
   /technician/task:
     get:
       consumes:
@@ -265,16 +306,16 @@ paths:
       - '*/*'
       description: find task.
       parameters:
-      - description: task id
-        in: query
+      - description: Task ID
+        in: path
         name: task_id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/tasks-api_internal_usecase.TechnicianFindTaskOutputDTO'
         "400":
@@ -303,11 +344,11 @@ paths:
       - '*/*'
       description: update task.
       parameters:
-      - description: task id
-        in: query
+      - description: Task ID
+        in: path
         name: task_id
         required: true
-        type: string
+        type: integer
       - description: task
         in: body
         name: request

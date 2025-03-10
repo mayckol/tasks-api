@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"tasks-api/internal/entity"
 	"tasks-api/internal/infra/database/queries"
 )
@@ -14,9 +15,11 @@ func NewManagerRepository(q *queries.Queries) *ManagerRepository {
 	return &ManagerRepository{q: q}
 }
 
-func (m ManagerRepository) DeleteTask(input entity.TaskEntity) error {
+func (m ManagerRepository) DeleteTask(taskId, updatedBy int) error {
 	_, err := m.q.DeleteTask(context.Background(), queries.DeleteTaskParams{
-		ID: int32(input.ID),
+		ID:        int32(taskId),
+		UpdatedBy: int32(updatedBy),
+		DeletedBy: sql.NullInt32{Int32: int32(updatedBy), Valid: true},
 	})
 	return err
 }

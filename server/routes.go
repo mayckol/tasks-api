@@ -53,6 +53,7 @@ func StartHttpHandler(hc *HandlersContainer, port int) *chi.Mux {
 						r.Use(middlewarepkg.AuthorizeMiddlewareFunc())
 						r.Route("/task", func(r chi.Router) {
 							r.Get("/", hc.ManagerHandler.AllTasks)
+							r.Delete("/{task_id}", hc.ManagerHandler.DeleteTask)
 						})
 					})
 				})

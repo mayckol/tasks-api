@@ -90,6 +90,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/task/{task_id}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "delete task.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Manager"
+                ],
+                "summary": "delete task.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Task ID",
+                        "name": "task_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "invalid request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "forbidden",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/technician/task": {
             "get": {
                 "security": [
@@ -219,16 +283,16 @@ const docTemplate = `{
                 "summary": "find task.",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "task id",
+                        "type": "integer",
+                        "description": "Task ID",
                         "name": "task_id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/tasks-api_internal_usecase.TechnicianFindTaskOutputDTO"
                         }
@@ -278,10 +342,10 @@ const docTemplate = `{
                 "summary": "update task.",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "task id",
+                        "type": "integer",
+                        "description": "Task ID",
                         "name": "task_id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     },
                     {

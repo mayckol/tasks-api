@@ -164,17 +164,19 @@ const deleteTask = `-- name: DeleteTask :execresult
 UPDATE tasks
 SET deleted_at = now(),
     updated_at = now(),
-    updated_by = ?
-WHERE id = ? and deleted_at is null
+    updated_by = ?,
+    deleted_by = ?
+where id = ? and deleted_at is null
 `
 
 type DeleteTaskParams struct {
-	UpdatedBy int32 `json:"updated_by"`
-	ID        int32 `json:"id"`
+	UpdatedBy int32         `json:"updated_by"`
+	DeletedBy sql.NullInt32 `json:"deleted_by"`
+	ID        int32         `json:"id"`
 }
 
 func (q *Queries) DeleteTask(ctx context.Context, arg DeleteTaskParams) (sql.Result, error) {
-	return q.exec(ctx, q.deleteTaskStmt, deleteTask, arg.UpdatedBy, arg.ID)
+	return q.exec(ctx, q.deleteTaskStmt, deleteTask, arg.UpdatedBy, arg.DeletedBy, arg.ID)
 }
 
 const findTaskByID = `-- name: FindTaskByID :one

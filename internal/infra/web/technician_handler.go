@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"github.com/go-chi/chi/v5"
 	"net/http"
 	"strconv"
 	"tasks-api/configs"
@@ -92,7 +93,7 @@ func (a *TechnicianHandler) Task(w http.ResponseWriter, r *http.Request) {
 // @Tags Technician
 // @Accept */*
 // @Produce json
-// @Param task_id query string true "task id"
+// @Param task_id path int true "Task ID"
 // @Param request body usecase.TechnicianUpdateTaskInputDTO true "task"
 // @Success 201 {object} usecase.TechnicianUpdateTaskOutputDTO
 // @Failure 400 {string} {object} "invalid request"
@@ -114,7 +115,7 @@ func (a *TechnicianHandler) UpdateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	taskID := r.URL.Query().Get("task_id")
+	taskID := chi.URLParam(r, "id")
 	if taskID == "" {
 		presenter.JSONPresenter(w, http.StatusBadRequest, nil, errorpkg.NotFoundError)
 		return
@@ -222,8 +223,8 @@ func (a *TechnicianHandler) AllTasks(w http.ResponseWriter, r *http.Request) {
 // @Tags Technician
 // @Accept */*
 // @Produce json
-// @Param task_id query string true "task id"
-// @Success 201 {object} usecase.TechnicianFindTaskOutputDTO
+// @Param task_id path int true "Task ID"
+// @Success 200 {object} usecase.TechnicianFindTaskOutputDTO
 // @Failure 400 {string} {object} "invalid request"
 // @Failure 401 {string} {object} "unauthorized"
 // @Failure 404 {string} {object} "not found"
@@ -243,7 +244,7 @@ func (a *TechnicianHandler) FindTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	taskID := r.URL.Query().Get("task_id")
+	taskID := chi.URLParam(r, "id")
 	if taskID == "" {
 		presenter.JSONPresenter(w, http.StatusBadRequest, nil, errorpkg.NotFoundError)
 		return

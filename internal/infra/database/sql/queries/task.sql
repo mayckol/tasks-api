@@ -77,5 +77,6 @@ WHERE id = ? and deleted_at is null;
 UPDATE tasks
 SET deleted_at = now(),
     updated_at = now(),
-    updated_by = ?
-WHERE id = ? and deleted_at is null;
+    updated_by = ?,
+    deleted_by = ?
+where id = ? and deleted_at is null;

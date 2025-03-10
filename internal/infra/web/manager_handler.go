@@ -1,6 +1,7 @@
 package web
 
 import (
+	"github.com/go-chi/chi/v5"
 	"net/http"
 	"strconv"
 	"tasks-api/configs"
@@ -90,4 +91,66 @@ func (a *ManagerHandler) AllTasks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	presenter.JSONSingleResPresenter(w, http.StatusOK, output)
+}
+
+// DeleteTask godoc
+// @Summary delete task.
+// @Description delete task.
+// @Tags Manager
+// @Accept */*
+// @Produce json
+// @Param task_id path int true "Task ID"
+// @Success 204
+// @Failure 400 {string} {object} "invalid request"
+// @Failure 401 {string} {object} "unauthorized"
+// @Failure 403 {string} {object} "forbidden"
+// @Failure 404 {string} {object} "not found"
+// @Failure 500 {string} string "internal server error"
+// @Security ApiKeyAuth
+// @Router /manager/task/{task_id} [delete]
+func (a *ManagerHandler) DeleteTask(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value(middlewarepkg.AuthKey{}).(*jwtpkg.UserClaims)
+	if !ok {
+		presenter.JSONPresenter(w, http.StatusInternalServerError, nil, invalidTokenClaimsErr)
+		return
+	}
+
+	userID := claims.UserID
+	if userID == 0 {
+		presenter.JSONPresenter(w, http.StatusInternalServerError, nil, invalidTokenClaimsErr)
+		return
+	}
+
+	taskID := chi.URLParam(r, "task_id")
+	if taskID == "" {
+		presenter.JSONPresenter(w, http.StatusBadRequest, nil, errorpkg.ParseJsonError)
+		return
+	}
+
+	tID, err := strconv.Atoi(taskID)
+	if err != nil {
+		presenter.JSONPresenter(w, http.StatusBadRequest, nil, errorpkg.ParseJsonError)
+		return
+	}
+
+	var input usecase.ManagerDeleteTaskInputDTO
+	input.ID = tID
+
+	invalidFields, isFailure := a.validator.Validate(input)
+	if isFailure {
+		presenter.JSONPresenter(w, http.StatusBadRequest, invalidFields, errorpkg.ValidateFieldsError)
+		return
+	}
+
+	uc := usecase.ManagerDeleteTaskUseCase{
+		ManagerRepository: a.managerRepository,
+	}
+
+	appError := uc.Execute(input, userID)
+	if appError != nil {
+		presenter.JSONPresenter(w, appError.StatusCode, nil, appError)
+		return
+	}
+
+	presenter.JSONPresenter(w, http.StatusNoContent, nil)
 }
