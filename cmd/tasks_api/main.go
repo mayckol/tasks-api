@@ -13,6 +13,7 @@ import (
 	"tasks-api/internal/auth/jwtpkg"
 	"tasks-api/internal/infra/database"
 	"tasks-api/internal/infra/database/queries"
+	"tasks-api/internal/infra/notify"
 	"tasks-api/internal/infra/repository"
 	"tasks-api/internal/infra/web"
 	"tasks-api/internal/validation"
@@ -51,9 +52,11 @@ func main() {
 
 	jwtService := jwtpkg.NewJWTService(envs.JwtSecret)
 
+	notifyService := notify.SimpleNotifier{}
+
 	httpHandler := server.StartHttpHandler(&server.HandlersContainer{
 		UserHandler:       *web.NewUserHandler(envs, uRepo, jwtService, v),
-		TechnicianHandler: *web.NewTechnicianHandler(envs, repository.NewTechnicianRepository(q), v),
+		TechnicianHandler: *web.NewTechnicianHandler(envs, repository.NewTechnicianRepository(q), v, notifyService),
 	}, envs.WebServerPort)
 
 	s := server.NewServer(envs, httpHandler)

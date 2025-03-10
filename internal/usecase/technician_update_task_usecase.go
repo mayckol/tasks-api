@@ -1,9 +1,11 @@
 package usecase
 
 import (
+	"fmt"
 	"net/http"
 	"tasks-api/internal/entity"
 	"tasks-api/internal/errorpkg"
+	"tasks-api/internal/infra/notify"
 )
 
 // swagger:model TechnicianUpdateTaskInputDTO
@@ -20,6 +22,7 @@ type TechnicianUpdateTaskOutputDTO struct {
 
 type TechnicianUpdateTaskUseCase struct {
 	TechnicianRepository entity.TechnicianRepository
+	NotifyService        notify.NotifyInterface
 }
 
 func (n *TechnicianUpdateTaskUseCase) Execute(input TechnicianUpdateTaskInputDTO, userID int) (*TechnicianUpdateTaskOutputDTO, *errorpkg.AppError) {
@@ -40,6 +43,16 @@ func (n *TechnicianUpdateTaskUseCase) Execute(input TechnicianUpdateTaskInputDTO
 
 	if err != nil {
 		return nil, errorpkg.Wrap("failed to create update technician", http.StatusInternalServerError, err)
+	}
+
+	if t.IsDone {
+		go func() {
+			err := n.NotifyService.TaskPerformed(t.ID, userID)
+			if err != nil {
+				fmt.Printf("failed to notify task performed: %v\n", err)
+			}
+		}()
+
 	}
 
 	return &TechnicianUpdateTaskOutputDTO{

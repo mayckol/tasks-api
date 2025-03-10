@@ -8,29 +8,31 @@ import (
 	"tasks-api/internal/auth/jwtpkg"
 	"tasks-api/internal/entity"
 	"tasks-api/internal/errorpkg"
+	"tasks-api/internal/infra/notify"
 	"tasks-api/internal/infra/presenter"
 	"tasks-api/internal/infra/web/middlewarepkg"
 	"tasks-api/internal/usecase"
 	"tasks-api/internal/validation"
 )
 
-// TechnicianHandler is a struct that contains the database connection and the environment variables it also can be AuthHandler
-// I chose to name it TechnicianHandler only to focus on the functional requirements of the task
 type TechnicianHandler struct {
 	envs                 *configs.EnvVars
 	technicianRepository entity.TechnicianRepository
 	validator            validation.ValidatorInterface
+	notifyService        notify.NotifyInterface
 }
 
 func NewTechnicianHandler(
 	envs *configs.EnvVars,
 	technicianRepository entity.TechnicianRepository,
 	validator validation.ValidatorInterface,
+	notifyService notify.NotifyInterface,
 ) *TechnicianHandler {
 	return &TechnicianHandler{
 		envs:                 envs,
 		technicianRepository: technicianRepository,
 		validator:            validator,
+		notifyService:        notifyService,
 	}
 }
 
@@ -141,6 +143,7 @@ func (a *TechnicianHandler) UpdateTask(w http.ResponseWriter, r *http.Request) {
 
 	uc := usecase.TechnicianUpdateTaskUseCase{
 		TechnicianRepository: a.technicianRepository,
+		NotifyService:        a.notifyService,
 	}
 
 	output, appError := uc.Execute(input, userID)
