@@ -1,0 +1,2 @@
+ALTER TABLE tasks
+ADD COLUMN is_done BOOLEAN NOT NULL DEFAULT FALSE after summary;
