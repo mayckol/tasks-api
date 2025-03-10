@@ -6,6 +6,7 @@ import (
 	"tasks-api/internal/entity"
 	"tasks-api/internal/errorpkg"
 	"tasks-api/internal/infra/notify"
+	"time"
 )
 
 // swagger:model TechnicianUpdateTaskInputDTO
@@ -31,13 +32,32 @@ func (n *TechnicianUpdateTaskUseCase) Execute(input TechnicianUpdateTaskInputDTO
 		return nil, errorpkg.Wrap("failed to find task", http.StatusInternalServerError, err)
 	}
 
+	// this is not needed in the challenge but it's a good practice to check if the task is already done
+	//if t.IsDone {
+	//	return nil, errorpkg.Wrap("task is already done", http.StatusBadRequest, nil)
+	//}
+
 	if t.UserID != userID {
 		return nil, errorpkg.Wrap("task not found", http.StatusNotFound, nil)
 	}
 
-	t.Summary = input.Summary
-	t.IsDone = input.IsDone
+	if input.Summary != "" {
+		t.Summary = input.Summary
+	}
+
+	if t.IsDone {
+		return nil, errorpkg.Wrap("task is already done", http.StatusBadRequest, nil)
+	}
+
+	if t.IsDone == false && input.IsDone == true {
+		t.IsDone = input.IsDone
+	}
+
 	t.UpdatedBy = userID
+	now := time.Now()
+	if t.IsDone && t.PerformedAt == nil {
+		t.PerformedAt = &now
+	}
 
 	_, err = n.TechnicianRepository.UpdateTask(*t)
 

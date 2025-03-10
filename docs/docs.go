@@ -510,6 +510,9 @@ const docTemplate = `{
                 "is_done": {
                     "type": "boolean"
                 },
+                "performed_at": {
+                    "type": "string"
+                },
                 "summary": {
                     "type": "string"
                 },

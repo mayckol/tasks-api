@@ -18,7 +18,6 @@ func NewManagerRepository(q *queries.Queries) *ManagerRepository {
 func (m ManagerRepository) DeleteTask(taskId, updatedBy int) error {
 	_, err := m.q.DeleteTask(context.Background(), queries.DeleteTaskParams{
 		ID:        int32(taskId),
-		UpdatedBy: int32(updatedBy),
 		DeletedBy: sql.NullInt32{Int32: int32(updatedBy), Valid: true},
 	})
 	return err

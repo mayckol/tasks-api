@@ -115,7 +115,7 @@ func (a *TechnicianHandler) UpdateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	taskID := chi.URLParam(r, "id")
+	taskID := chi.URLParam(r, "task_id")
 	if taskID == "" {
 		presenter.JSONPresenter(w, http.StatusBadRequest, nil, errorpkg.NotFoundError)
 		return
@@ -244,7 +244,7 @@ func (a *TechnicianHandler) FindTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	taskID := chi.URLParam(r, "id")
+	taskID := chi.URLParam(r, "task_id")
 	if taskID == "" {
 		presenter.JSONPresenter(w, http.StatusBadRequest, nil, errorpkg.NotFoundError)
 		return

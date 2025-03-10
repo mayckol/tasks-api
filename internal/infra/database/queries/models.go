@@ -15,15 +15,16 @@ type Role struct {
 }
 
 type Task struct {
-	ID        int32         `json:"id"`
-	UserID    int32         `json:"user_id"`
-	Summary   string        `json:"summary"`
-	CreatedAt time.Time     `json:"created_at"`
-	UpdatedAt time.Time     `json:"updated_at"`
-	UpdatedBy int32         `json:"updated_by"`
-	DeletedAt sql.NullTime  `json:"deleted_at"`
-	DeletedBy sql.NullInt32 `json:"deleted_by"`
-	IsDone    bool          `json:"is_done"`
+	ID          int32         `json:"id"`
+	UserID      int32         `json:"user_id"`
+	Summary     string        `json:"summary"`
+	CreatedAt   time.Time     `json:"created_at"`
+	UpdatedAt   time.Time     `json:"updated_at"`
+	UpdatedBy   int32         `json:"updated_by"`
+	DeletedAt   sql.NullTime  `json:"deleted_at"`
+	DeletedBy   sql.NullInt32 `json:"deleted_by"`
+	IsDone      bool          `json:"is_done"`
+	PerformedAt sql.NullTime  `json:"performed_at"`
 }
 
 type User struct {

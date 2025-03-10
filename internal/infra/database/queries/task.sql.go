@@ -164,19 +164,17 @@ const deleteTask = `-- name: DeleteTask :execresult
 UPDATE tasks
 SET deleted_at = now(),
     updated_at = now(),
-    updated_by = ?,
     deleted_by = ?
 where id = ? and deleted_at is null
 `
 
 type DeleteTaskParams struct {
-	UpdatedBy int32         `json:"updated_by"`
 	DeletedBy sql.NullInt32 `json:"deleted_by"`
 	ID        int32         `json:"id"`
 }
 
 func (q *Queries) DeleteTask(ctx context.Context, arg DeleteTaskParams) (sql.Result, error) {
-	return q.exec(ctx, q.deleteTaskStmt, deleteTask, arg.UpdatedBy, arg.DeletedBy, arg.ID)
+	return q.exec(ctx, q.deleteTaskStmt, deleteTask, arg.DeletedBy, arg.ID)
 }
 
 const findTaskByID = `-- name: FindTaskByID :one
@@ -292,21 +290,24 @@ UPDATE tasks
 SET updated_at = now(),
     summary = ?,
     is_done = ?,
+    performed_at = ?,
     updated_by = ?
 WHERE id = ? and deleted_at is null
 `
 
 type UpdateTaskParams struct {
-	Summary   string `json:"summary"`
-	IsDone    bool   `json:"is_done"`
-	UpdatedBy int32  `json:"updated_by"`
-	ID        int32  `json:"id"`
+	Summary     string       `json:"summary"`
+	IsDone      bool         `json:"is_done"`
+	PerformedAt sql.NullTime `json:"performed_at"`
+	UpdatedBy   int32        `json:"updated_by"`
+	ID          int32        `json:"id"`
 }
 
 func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) (sql.Result, error) {
 	return q.exec(ctx, q.updateTaskStmt, updateTask,
 		arg.Summary,
 		arg.IsDone,
+		arg.PerformedAt,
 		arg.UpdatedBy,
 		arg.ID,
 	)

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"tasks-api/internal/entity"
 	"tasks-api/internal/infra/database/queries"
 )
@@ -34,13 +35,16 @@ func (t TechnicianRepository) NewTask(input entity.TaskEntity) (int, error) {
 }
 
 func (t TechnicianRepository) UpdateTask(input entity.TaskEntity) (int, error) {
-	res, err := t.q.UpdateTask(context.Background(), queries.UpdateTaskParams{
+	params := queries.UpdateTaskParams{
 		Summary:   input.Summary,
 		UpdatedBy: int32(input.UpdatedBy),
 		IsDone:    input.IsDone,
 		ID:        int32(input.ID),
-	})
-
+	}
+	if input.PerformedAt != nil {
+		params.PerformedAt = sql.NullTime{Time: *input.PerformedAt, Valid: true}
+	}
+	res, err := t.q.UpdateTask(context.Background(), params)
 	if err != nil {
 		return 0, err
 	}
