@@ -37,6 +37,15 @@ services:
       timeout: 5s
       retries: 3
 
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: tasks_rabbitmq
+    env_file: ".env"
+    restart: always
+    ports:
+      - "${RABBITMQ_DEFAULT_PORT}:5672"
+      - "${RABBITMQ_DEFAULT_WEB_PLUGIN_PORT}:15672"
+
 volumes:
   mysqldb-data:
 

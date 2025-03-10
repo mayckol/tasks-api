@@ -45,10 +45,6 @@ func (n *TechnicianUpdateTaskUseCase) Execute(input TechnicianUpdateTaskInputDTO
 		t.Summary = input.Summary
 	}
 
-	if t.IsDone {
-		return nil, errorpkg.Wrap("task is already done", http.StatusBadRequest, nil)
-	}
-
 	if t.IsDone == false && input.IsDone == true {
 		t.IsDone = input.IsDone
 	}
@@ -70,9 +66,10 @@ func (n *TechnicianUpdateTaskUseCase) Execute(input TechnicianUpdateTaskInputDTO
 			err := n.NotifyService.TaskPerformed(t.ID, userID)
 			if err != nil {
 				fmt.Printf("failed to notify task performed: %v\n", err)
+			} else {
+				fmt.Printf("notified task: %d performed by user: %d\n", t.ID, userID)
 			}
 		}()
-
 	}
 
 	return &TechnicianUpdateTaskOutputDTO{
