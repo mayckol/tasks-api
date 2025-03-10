@@ -19,8 +19,13 @@ SELECT id,
        created_at,
        updated_at
 FROM tasks
-WHERE id = ? and deleted_at is null
+WHERE id = ? and user_id = ? and deleted_at is null
 `
+
+type FindTaskByIDParams struct {
+	ID     int32 `json:"id"`
+	UserID int32 `json:"user_id"`
+}
 
 type FindTaskByIDRow struct {
 	ID        int32     `json:"id"`
@@ -31,8 +36,8 @@ type FindTaskByIDRow struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (q *Queries) FindTaskByID(ctx context.Context, id int32) (FindTaskByIDRow, error) {
-	row := q.queryRow(ctx, q.findTaskByIDStmt, findTaskByID, id)
+func (q *Queries) FindTaskByID(ctx context.Context, arg FindTaskByIDParams) (FindTaskByIDRow, error) {
+	row := q.queryRow(ctx, q.findTaskByIDStmt, findTaskByID, arg.ID, arg.UserID)
 	var i FindTaskByIDRow
 	err := row.Scan(
 		&i.ID,

@@ -43,6 +43,7 @@ func StartHttpHandler(hc *HandlersContainer, port int) *chi.Mux {
 					r.Route("/task", func(r chi.Router) {
 						r.Post("/", hc.TechnicianHandler.Task)
 						r.Patch("/{task_id}", hc.TechnicianHandler.UpdateTask)
+						r.Get("/{task_id}", hc.TechnicianHandler.FindTask)
 					})
 				})
 			})

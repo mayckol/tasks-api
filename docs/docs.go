@@ -76,6 +76,65 @@ const docTemplate = `{
             }
         },
         "/technician/task/{task_id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "find task.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Technician"
+                ],
+                "summary": "find task.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "task id",
+                        "name": "task_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/tasks-api_internal_usecase.TechnicianFindTaskOutputDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "patch": {
                 "security": [
                     {
@@ -303,6 +362,32 @@ const docTemplate = `{
                 }
             }
         },
+        "tasks-api_internal_usecase.TechnicianFindTaskOutputDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_done": {
+                    "type": "boolean"
+                },
+                "summary": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "tasks-api_internal_usecase.TechnicianNewTaskInputDTO": {
             "type": "object",
             "required": [
@@ -326,6 +411,9 @@ const docTemplate = `{
         },
         "tasks-api_internal_usecase.TechnicianUpdateTaskInputDTO": {
             "type": "object",
+            "required": [
+                "task_id"
+            ],
             "properties": {
                 "is_done": {
                     "type": "boolean"
@@ -334,6 +422,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 1
+                },
+                "task_id": {
+                    "type": "integer"
                 }
             }
         },

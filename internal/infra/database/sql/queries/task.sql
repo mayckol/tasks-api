@@ -24,7 +24,7 @@ SELECT id,
        created_at,
        updated_at
 FROM tasks
-WHERE id = ? and deleted_at is null;
+WHERE id = ? and user_id = ? and deleted_at is null;
 
 -- name: UpdateTask :execresult
 UPDATE tasks

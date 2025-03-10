@@ -23,7 +23,7 @@ type TechnicianUpdateTaskUseCase struct {
 }
 
 func (n *TechnicianUpdateTaskUseCase) Execute(input TechnicianUpdateTaskInputDTO, userID int) (*TechnicianUpdateTaskOutputDTO, *errorpkg.AppError) {
-	t, err := n.TechnicianRepository.FindTask(input.TaskID)
+	t, err := n.TechnicianRepository.FindTask(input.TaskID, userID)
 	if err != nil {
 		return nil, errorpkg.Wrap("failed to find task", http.StatusInternalServerError, err)
 	}

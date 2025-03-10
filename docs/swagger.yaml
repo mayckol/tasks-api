@@ -42,6 +42,23 @@ definitions:
       role_id:
         type: integer
     type: object
+  tasks-api_internal_usecase.TechnicianFindTaskOutputDTO:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_done:
+        type: boolean
+      summary:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+      user_id:
+        type: integer
+    type: object
   tasks-api_internal_usecase.TechnicianNewTaskInputDTO:
     properties:
       summary:
@@ -64,6 +81,10 @@ definitions:
         maxLength: 255
         minLength: 1
         type: string
+      task_id:
+        type: integer
+    required:
+    - task_id
     type: object
   tasks-api_internal_usecase.TechnicianUpdateTaskOutputDTO:
     properties:
@@ -117,6 +138,44 @@ paths:
       tags:
       - Technician
   /technician/task/{task_id}:
+    get:
+      consumes:
+      - '*/*'
+      description: find task.
+      parameters:
+      - description: task id
+        in: query
+        name: task_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/tasks-api_internal_usecase.TechnicianFindTaskOutputDTO'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: find task.
+      tags:
+      - Technician
     patch:
       consumes:
       - '*/*'

@@ -53,8 +53,11 @@ func (t TechnicianRepository) UpdateTask(input entity.TaskEntity) (int, error) {
 	return int(rowsAffected), nil
 }
 
-func (t TechnicianRepository) FindTask(taskID int) (*entity.TaskEntity, error) {
-	task, err := t.q.FindTaskByID(context.Background(), int32(taskID))
+func (t TechnicianRepository) FindTask(taskID, userID int) (*entity.TaskEntity, error) {
+	task, err := t.q.FindTaskByID(context.Background(), queries.FindTaskByIDParams{
+		ID:     int32(taskID),
+		UserID: int32(userID),
+	})
 	if err != nil {
 		return nil, err
 	}
